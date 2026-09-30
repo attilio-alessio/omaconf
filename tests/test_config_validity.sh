@@ -57,4 +57,70 @@ else
     assert_file_contains "yazi-terminal desktop handles directories" "$YAZI_DATA/yazi-terminal.desktop" "inode/directory"
 fi
 
+USERCONF_LIB="$PROJECT_DIR/scripts/lib/userconf.sh"
+assert_file_exists "user config library exists" "$USERCONF_LIB"
+assert_file_contains "user config library installs files from a source" "$USERCONF_LIB" "^install_user_file\(\)"
+assert_file_contains "user config library installs content from stdin" "$USERCONF_LIB" "^install_user_content\(\)"
+assert_file_contains "user config library manages shell blocks" "$USERCONF_LIB" "^install_shell_block\(\)"
+assert_true "user config library leaves caller shell options untouched" \
+    "bash -c 'set +e +u; source \"$USERCONF_LIB\"; [[ \$- != *e* && \$- != *u* ]]'"
+assert_true "no installer keeps the ad hoc timestamped backup" \
+    "! grep -qE 'bak-\\\$\\(date' '$PROJECT_DIR'/*conf/install.sh"
+
+for installer in cliconf microconf nvimconf yaziconf zedconf; do
+    assert_file_contains "$installer sources the user config library" \
+        "$PROJECT_DIR/$installer/install.sh" "userconf.sh"
+done
+
+if (($UID != 0)); then
+    USERCONF_SANDBOX="$(mktemp -d)"
+    mkdir -p "$USERCONF_SANDBOX/src" "$USERCONF_SANDBOX/dst"
+    printf 'first\n' > "$USERCONF_SANDBOX/src/payload"
+    printf 'stale\n' > "$USERCONF_SANDBOX/dst/payload"
+    (
+        set -euo pipefail
+        source "$USERCONF_LIB"
+        install_user_file "$USERCONF_SANDBOX/src/payload" "$USERCONF_SANDBOX/dst/payload"
+    ) 2>/dev/null
+    assert_true "user config library installs the new content" \
+        "grep -q '^first$' '$USERCONF_SANDBOX/dst/payload'"
+    assert_true "user config library keeps the replaced content in a single slot backup" \
+        "[[ -f '$USERCONF_SANDBOX/dst/payload.bak' ]] && ! ls '$USERCONF_SANDBOX/dst/' | grep -qE '\.bak-'"
+    (
+        set -euo pipefail
+        source "$USERCONF_LIB"
+        install_user_file "$USERCONF_SANDBOX/src/payload" "$USERCONF_SANDBOX/dst/payload"
+        install_user_file "$USERCONF_SANDBOX/src/payload" "$USERCONF_SANDBOX/dst/payload"
+    ) 2>/dev/null
+    assert_true "user config library never accumulates backups across runs" \
+        "[[ \$(ls -1 '$USERCONF_SANDBOX/dst/' | grep -c 'payload') -eq 2 ]]"
+
+    printf '# rc\n\n# >>> omaconf sandbox >>>\nold() { :; }\n# <<< omaconf sandbox <<<\n' > "$USERCONF_SANDBOX/rc"
+    (
+        set -euo pipefail
+        source "$USERCONF_LIB"
+        install_shell_block "$USERCONF_SANDBOX/rc" "# >>> omaconf sandbox >>>" "# <<< omaconf sandbox <<<" << 'BLOCK'
+new() { :; }
+BLOCK
+    ) 2>/dev/null
+    assert_true "shell block replaces the previous marked range" \
+        "! grep -q 'old()' '$USERCONF_SANDBOX/rc'"
+    assert_true "shell block writes the new body" \
+        "grep -q 'new()' '$USERCONF_SANDBOX/rc'"
+    assert_true "shell block writes exactly one marked range" \
+        "[[ \$(grep -c '>>> omaconf sandbox >>>' '$USERCONF_SANDBOX/rc') -eq 1 ]]"
+
+    printf '# rc\n\n# >>> omaconf sandbox >>>\nnew() { :; }\n# <<< omaconf sandbox <<<\n' > "$USERCONF_SANDBOX/rc-idem"
+    (
+        set -euo pipefail
+        source "$USERCONF_LIB"
+        install_shell_block "$USERCONF_SANDBOX/rc-idem" "# >>> omaconf sandbox >>>" "# <<< omaconf sandbox <<<" << 'BLOCK'
+new() { :; }
+BLOCK
+    ) 2>/dev/null
+    assert_true "shell block is idempotent" \
+        "cmp -s '$USERCONF_SANDBOX/rc' '$USERCONF_SANDBOX/rc-idem'"
+    rm -rf "$USERCONF_SANDBOX"
+fi
+
 test_summary
