@@ -170,7 +170,7 @@ tcheck "check.kitty_terminal" "pacman -Q kitty &>/dev/null && ! pacman -Q foot &
 tcheck "check.webapps_removed" "! grep -rlE 'omarchy-(launch-webapp|webapp-handler)' /usr/share/omarchy/applications 2>/dev/null"
 
 section verify.sec_power
-tcheck "check.power_conf" "[[ -f /etc/omablot/power.conf ]]"
+tcheck "check.power_conf" "[[ -f /etc/omaconf/power.conf ]]"
 tcheck "check.battery_udev" "[[ -f /etc/udev/rules.d/98-battery-charge-threshold.rules ]]"
 tcheck "check.battery_tmpfiles" "[[ -f /etc/tmpfiles.d/battery-charge-threshold.conf ]]"
 tcheck "check.battery_service" "systemctl is-enabled battery-charge-threshold.service &>/dev/null || [[ -L /etc/systemd/system/multi-user.target.wants/battery-charge-threshold.service ]]"
@@ -178,7 +178,7 @@ if ls /sys/class/power_supply/BAT*/charge_control_end_threshold &>/dev/null; the
     tcheck "check.battery_limit" "grep -qx '75' /sys/class/power_supply/BAT*/charge_control_end_threshold 2>/dev/null"
 fi
 if grep -qw deep /sys/power/mem_sleep 2>/dev/null; then
-    tcheck "check.deep_sleep" "grep -q '^MemorySleepMode=deep$' /etc/systemd/sleep.conf.d/99-omablot-deep-sleep.conf"
+    tcheck "check.deep_sleep" "grep -q '^MemorySleepMode=deep$' /etc/systemd/sleep.conf.d/99-omaconf-deep-sleep.conf"
 fi
 
 section verify.sec_sched
@@ -221,7 +221,7 @@ tcheck "verify.locale_conf"  "[[ -f /etc/locale.conf ]]"
 tcheck "verify.locale_lang"  "[[ -n \"$VERIFY_LANG\" ]]"
 tcheck "verify.locale_keymap" "grep -qE '^KEYMAP=' /etc/vconsole.conf 2>/dev/null"
 tcheck "verify.locale_generated" "locale_generated"
-tcheck "verify.locale_profile" "[[ -f /etc/profile.d/omablot-locale.sh ]]"
+tcheck "verify.locale_profile" "[[ -f /etc/profile.d/omaconf-locale.sh ]]"
 tcheck "verify.locale_hyprland" "grep -rq 'kb_layout' /home/*/.config/hypr/input.lua 2>/dev/null"
 catalog_check() {
     local lang
@@ -231,7 +231,7 @@ catalog_check() {
     return 0
 }
 tcheck "verify.locale_catalogs" "catalog_check"
-tcheck "verify.locale_i18n" "[[ -n \"$I18N_LANG\" ]] && (( ${#OMABLOT_I18N[@]} > 0 ))"
+tcheck "verify.locale_i18n" "[[ -n \"$I18N_LANG\" ]] && (( ${#OMACONF_I18N[@]} > 0 ))"
 
 echo ""
 echo -e "${BOLD}$(t verify.passed_summary "$PASS" "$FAIL")${NC}"

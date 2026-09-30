@@ -6,8 +6,8 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/yazi"
 APP_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
 FM_DESKTOP="yazi-terminal.desktop"
-MARK_BEGIN="# >>> omablot yazi >>>"
-MARK_END="# <<< omablot yazi <<<"
+MARK_BEGIN="# >>> omaconf yazi >>>"
+MARK_END="# <<< omaconf yazi <<<"
 
 I18N_LIB="$(dirname "$SCRIPT_DIR")/scripts/lib"
 # shellcheck source=/dev/null
@@ -47,7 +47,7 @@ fi
 if [[ -f "$HOME/.bashrc" ]]; then
     sed -i "\\|$MARK_BEGIN|,\\|$MARK_END|d" "$HOME/.bashrc"
     cat >> "$HOME/.bashrc" << 'SHELLBLOCK'
-# >>> omablot yazi >>>
+# >>> omaconf yazi >>>
 function ya() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
 	yazi "$@" --cwd-file="$tmp"
@@ -69,7 +69,7 @@ yazi - navigation (vim-style)           quick openers
   : .............. command, Q quit       ya .......... quit staying here
 HELP
 }
-# <<< omablot yazi <<<
+# <<< omaconf yazi <<<
 SHELLBLOCK
 fi
 

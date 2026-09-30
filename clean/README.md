@@ -101,4 +101,4 @@ bash tests/test_system_cleanup.sh
 bash tests/test_home_cleanup.sh
 ```
 
-Operating rules in `AGENTS.md` and runbook in `.skills/system-cleanup`. Family contract in profile repo `omablot/.github` inside `docs`.
+Operating rules in `AGENTS.md` and runbook in `.skills/system-cleanup`. Family contract in profile repo `omaconf/.github` inside `docs`.

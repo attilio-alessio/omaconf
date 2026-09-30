@@ -42,7 +42,7 @@ assert_file_contains "00-env defines aur_verified_install" "$MODULES_DIR/00-env.
 assert_file_contains "00-env defines omarchy_as helper" "$MODULES_DIR/00-env.sh" "omarchy_as\(\)"
 assert_file_contains "omarchy_as forwards the user session bus" "$MODULES_DIR/00-env.sh" "DBUS_SESSION_BUS_ADDRESS"
 assert_file_contains "20-defaults routes the browser through omarchy_as" "$MODULES_DIR/20-defaults.sh" "omarchy_as"
-assert_file_contains "35-shell-plugins uses the canonical omamp source" "$MODULES_DIR/35-shell-plugins.sh" "omablot/omamp.git"
+assert_file_contains "35-shell-plugins uses the canonical omamp source" "$MODULES_DIR/35-shell-plugins.sh" "omaconf/omamp.git"
 assert_file_contains "35-shell-plugins routes through omarchy_as" "$MODULES_DIR/35-shell-plugins.sh" "omarchy_as"
 assert_file_contains "32-omaqt tracks the omaqt checkout" "$MODULES_DIR/32-omaqt.sh" "OMAQT_DIR"
 assert_file_contains "33-nvim provisions the root nvimconf" "$MODULES_DIR/33-nvim.sh" "nvimconf/install.sh"

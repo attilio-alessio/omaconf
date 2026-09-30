@@ -52,8 +52,8 @@ user_as() {
         "XDG_RUNTIME_DIR=$runtime"
         "DBUS_SESSION_BUS_ADDRESS=$bus"
     )
-    if [[ -n "${OMABLOT_LANG:-}" ]]; then _env+=("OMABLOT_LANG=$OMABLOT_LANG"); fi
-    if [[ -n "${OMABLOT_FORCE_TZ:-}" ]]; then _env+=("OMABLOT_FORCE_TZ=$OMABLOT_FORCE_TZ"); fi
+    if [[ -n "${OMACONF_LANG:-}" ]]; then _env+=("OMACONF_LANG=$OMACONF_LANG"); fi
+    if [[ -n "${OMACONF_FORCE_TZ:-}" ]]; then _env+=("OMACONF_FORCE_TZ=$OMACONF_FORCE_TZ"); fi
     sudo -u "$user" env -u XDG_SESSION_DESKTOP -u DESKTOP_SESSION "${_env[@]}" "$@"
 }
 

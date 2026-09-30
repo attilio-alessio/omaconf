@@ -1,6 +1,6 @@
 set -euo pipefail
 
-OMAMP_GIT="https://github.com/omablot/omamp.git"
+OMAMP_GIT="https://github.com/omaconf/omamp.git"
 OMAMP_ID="krosci.omamp"
 
 log "shell_plugins.install"

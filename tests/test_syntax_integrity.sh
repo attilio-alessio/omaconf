@@ -21,8 +21,8 @@ assert_file_executable "scripts/launch.sh is executable" "$PROJECT_DIR/scripts/l
 assert_file_executable "scripts/run-setup.sh is executable" "$PROJECT_DIR/scripts/run-setup.sh"
 assert_file_executable "hooks/theme-set.d/folder-color is executable" "$PROJECT_DIR/hooks/theme-set.d/folder-color"
 assert_file_executable "hooks/theme-set.d/micro-theme is executable" "$PROJECT_DIR/hooks/theme-set.d/micro-theme"
-assert_file_executable "hooks/pre-refresh-pacman.d/99-omablot-persist is executable" "$PROJECT_DIR/hooks/pre-refresh-pacman.d/99-omablot-persist"
-assert_file_executable "hooks/post-update.d/99-omablot-persist is executable" "$PROJECT_DIR/hooks/post-update.d/99-omablot-persist"
+assert_file_executable "hooks/pre-refresh-pacman.d/99-omaconf-persist is executable" "$PROJECT_DIR/hooks/pre-refresh-pacman.d/99-omaconf-persist"
+assert_file_executable "hooks/post-update.d/99-omaconf-persist is executable" "$PROJECT_DIR/hooks/post-update.d/99-omaconf-persist"
 assert_file_executable "zedconf/install.sh is executable" "$PROJECT_DIR/zedconf/install.sh"
 assert_file_executable "microconf/install.sh is executable" "$PROJECT_DIR/microconf/install.sh"
 assert_file_executable "yaziconf/install.sh is executable" "$PROJECT_DIR/yaziconf/install.sh"
@@ -45,7 +45,7 @@ assert_file_contains "launch.sh uses strict mode" "$PROJECT_DIR/scripts/launch.s
 assert_file_contains "run-setup.sh uses strict mode" "$PROJECT_DIR/scripts/run-setup.sh" "set -euo pipefail"
 assert_file_contains "folder-color uses strict mode" "$PROJECT_DIR/hooks/theme-set.d/folder-color" "set -euo pipefail"
 assert_file_contains "micro-theme uses strict mode" "$PROJECT_DIR/hooks/theme-set.d/micro-theme" "set -euo pipefail"
-assert_file_contains "pre-refresh persist hook uses strict mode" "$PROJECT_DIR/hooks/pre-refresh-pacman.d/99-omablot-persist" "set -euo pipefail"
-assert_file_contains "post-update persist hook uses strict mode" "$PROJECT_DIR/hooks/post-update.d/99-omablot-persist" "set -euo pipefail"
+assert_file_contains "pre-refresh persist hook uses strict mode" "$PROJECT_DIR/hooks/pre-refresh-pacman.d/99-omaconf-persist" "set -euo pipefail"
+assert_file_contains "post-update persist hook uses strict mode" "$PROJECT_DIR/hooks/post-update.d/99-omaconf-persist" "set -euo pipefail"
 
 test_summary

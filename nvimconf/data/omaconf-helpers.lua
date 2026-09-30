@@ -1,5 +1,5 @@
--- omablot helpers: purist Vim motions with memory-friendly helpers.
--- This file is owned by omablot (module 33-nvim.sh). Omarchy regenerates
+-- omaconf helpers: purist Vim motions with memory-friendly helpers.
+-- This file is owned by omaconf (module 33-nvim.sh). Omarchy regenerates
 -- lua/plugins/theme.lua on every `omarchy theme set`, but never touches
 -- this file, so helpers survive theme switches untouched.
 --

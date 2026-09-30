@@ -3,9 +3,9 @@ SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 PROJECT_ROOT="$PROJECT_DIR"
 MODULES_DIR="$SCRIPT_DIR/modules"
-LOG="${OMABLOT_LOG:-$PROJECT_DIR/setup.log}"
+LOG="${OMACONF_LOG:-$PROJECT_DIR/setup.log}"
 
-if [[ "${OMABLOT_LOG_STDOUT:-0}" -eq 0 ]]; then
+if [[ "${OMACONF_LOG_STDOUT:-0}" -eq 0 ]]; then
     exec > >(tee -a "$LOG") 2>&1
 fi
 umask 077

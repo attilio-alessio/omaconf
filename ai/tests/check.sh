@@ -22,7 +22,7 @@ printf '%s\n' "[ai integrity]"
 [[ -f "$PROJECT_DIR/scripts/modules/40-ai.sh" ]] && ok "module exists" || bad "module exists"
 [[ -x "$PROJECT_DIR/scripts/modules/40-ai.sh" ]] && ok "module executable" || bad "module executable"
 
-contains "$PROJECT_DIR/scripts/modules/40-ai.sh" "OMABLOT_AI_DEBLOAT" && ok "module gated by env flag" || bad "module gated by env flag"
+contains "$PROJECT_DIR/scripts/modules/40-ai.sh" "OMACONF_AI_DEBLOAT" && ok "module gated by env flag" || bad "module gated by env flag"
 contains "$PROJECT_DIR/scripts/modules/40-ai.sh" "mise" && ok "module excludes mise tools" || bad "module excludes mise tools"
 contains "$PROJECT_DIR/scripts/modules/40-ai.sh" "tensaku" && ok "module excludes tensaku" || bad "module excludes tensaku"
 contains "$PROJECT_DIR/scripts/modules/40-ai.sh" "omarchy-crash-watch" && ok "module handles crash-watch" || bad "module handles crash-watch"

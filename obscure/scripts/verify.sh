@@ -30,10 +30,10 @@ check_user_gate() {
     [[ -d "$u_home/.config/yazi/plugins/obscure.yazi" ]] || return 1
     [[ -f "$u_home/.config/yazi/plugins/obscure.yazi/main.lua" ]] || return 1
     [[ -f "$u_home/.config/obscure/patterns" ]] || return 1
-    grep -qF "omablot obscure" "$u_home/.config/yazi/yazi.toml" 2>/dev/null || return 1
+    grep -qF "omaconf obscure" "$u_home/.config/yazi/yazi.toml" 2>/dev/null || return 1
     grep -qF 'run = "obscure"' "$u_home/.config/yazi/yazi.toml" 2>/dev/null || return 1
     grep -qF 'use = "obscure-view"' "$u_home/.config/yazi/yazi.toml" 2>/dev/null || return 1
-    grep -qF "omablot obscure" "$u_home/.config/yazi/theme.toml" 2>/dev/null || return 1
+    grep -qF "omaconf obscure" "$u_home/.config/yazi/theme.toml" 2>/dev/null || return 1
     return 0
 }
 

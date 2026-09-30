@@ -16,7 +16,7 @@ assert_file_exists "debloat module exists" "$DEBLOAT_MODULE"
 assert_file_contains "debloat module defines package removal" "$DEBLOAT_MODULE" "pacman -Rns"
 assert_file_contains "debloat module defines IgnorePkg pinning" "$DEBLOAT_MODULE" "IgnorePkg.*MERGED_PINS"
 assert_file_contains "debloat module merges pins instead of overwriting" "$DEBLOAT_MODULE" "EXISTING_PINS"
-assert_file_contains "debloat module installs persistence hooks" "$DEBLOAT_MODULE" "99-omablot-persist"
+assert_file_contains "debloat module installs persistence hooks" "$DEBLOAT_MODULE" "99-omaconf-persist"
 
 assert_file_exists "defaults module exists" "$DEFAULTS_MODULE"
 assert_file_contains "defaults module configures brave-origin" "$DEFAULTS_MODULE" "brave-origin"
@@ -34,7 +34,7 @@ assert_file_exists "theme preview apply helper exists" "$PROJECT_DIR/theme-previ
 assert_file_contains "theme preview apply creates missing user overlays" "$PROJECT_DIR/theme-previews/apply.sh" 'install -d -m 700'
 assert_file_contains "theme preview apply clears selector cache" "$PROJECT_DIR/theme-previews/apply.sh" 'theme-selector'
 
-if command -v pacman &>/dev/null && [[ -f /etc/arch-release ]] && [[ -f /etc/pacman.d/omablot/ignore-pkgs.list ]]; then
+if command -v pacman &>/dev/null && [[ -f /etc/arch-release ]] && [[ -f /etc/pacman.d/omaconf/ignore-pkgs.list ]]; then
     assert_true "herdr installed" "pacman -Q herdr &>/dev/null"
     assert_true "gum installed" "pacman -Q gum &>/dev/null"
     assert_true "brave-origin-bin installed" "pacman -Q brave-origin-bin &>/dev/null"
@@ -56,8 +56,8 @@ if command -v pacman &>/dev/null && [[ -f /etc/arch-release ]] && [[ -f /etc/pac
     assert_true "podman installed" "pacman -Q podman &>/dev/null"
 fi
 
-if [[ -f /etc/pacman.d/omablot/ignore-pkgs.list ]]; then
-    assert_file_exists "pacman ignore-pkgs.list exists" "/etc/pacman.d/omablot/ignore-pkgs.list"
+if [[ -f /etc/pacman.d/omaconf/ignore-pkgs.list ]]; then
+    assert_file_exists "pacman ignore-pkgs.list exists" "/etc/pacman.d/omaconf/ignore-pkgs.list"
     assert_file_contains "pacman.conf has IgnorePkg" "/etc/pacman.conf" "^IgnorePkg"
 fi
 
@@ -69,12 +69,12 @@ MICRO_HOOK="$PROJECT_DIR/hooks/theme-set.d/micro-theme"
 assert_file_exists "micro-theme hook exists in repo" "$MICRO_HOOK"
 assert_file_executable "micro-theme hook executable" "$MICRO_HOOK"
 
-PERSIST_PRE="$PROJECT_DIR/hooks/pre-refresh-pacman.d/99-omablot-persist"
+PERSIST_PRE="$PROJECT_DIR/hooks/pre-refresh-pacman.d/99-omaconf-persist"
 assert_file_exists "pre-refresh persist hook exists in repo" "$PERSIST_PRE"
 assert_file_executable "pre-refresh persist hook executable" "$PERSIST_PRE"
 assert_file_contains "pre-refresh hook re-merges IgnorePkg" "$PERSIST_PRE" "IgnorePkg"
 
-PERSIST_POST="$PROJECT_DIR/hooks/post-update.d/99-omablot-persist"
+PERSIST_POST="$PROJECT_DIR/hooks/post-update.d/99-omaconf-persist"
 assert_file_exists "post-update persist hook exists in repo" "$PERSIST_POST"
 assert_file_executable "post-update persist hook executable" "$PERSIST_POST"
 assert_file_contains "post-update hook reapplies yazi default" "$PERSIST_POST" "yazi-terminal.desktop inode/directory"
@@ -95,7 +95,7 @@ assert_file_contains "defaults module provisions yaziconf" "$DEFAULTS_MODULE" "y
 assert_file_contains "defaults module enforces gio file manager default" "$DEFAULTS_MODULE" "gio mime inode/directory"
 assert_file_contains "defaults module enforces mimeapps file manager" "$DEFAULTS_MODULE" "mimeapps"
 assert_file_contains "defaults module records file-manager state" "$DEFAULTS_MODULE" "defaults/file-manager"
-assert_file_contains "defaults module rebinding hypr file manager keys" "$DEFAULTS_MODULE" "omablot-yazi-fm"
+assert_file_contains "defaults module rebinding hypr file manager keys" "$DEFAULTS_MODULE" "omaconf-yazi-fm"
 assert_file_contains "defaults module installs termfilechooser portal" "$DEFAULTS_MODULE" "xdg-desktop-portal-termfilechooser"
 assert_file_contains "defaults module routes FileChooser to termfilechooser" "$DEFAULTS_MODULE" "FileChooser=termfilechooser"
 assert_file_contains "yaziconf template uses current file placeholders" "$PROJECT_DIR/yaziconf/data/yazi.toml" "%s"

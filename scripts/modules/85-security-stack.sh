@@ -99,7 +99,7 @@ log "security.apparmor"
 if pacman -Q apparmor &>/dev/null; then
     mkdir -p /etc/apparmor.d
     if command -v limine-update &>/dev/null && bootctl status 2>/dev/null | grep -q 'Product: Limine'; then
-        APPARMOR_BOOT_CONF=/etc/limine-entry-tool.d/omablot-apparmor.conf
+        APPARMOR_BOOT_CONF=/etc/limine-entry-tool.d/omaconf-apparmor.conf
         APPARMOR_BOOT_LINE='KERNEL_CMDLINE[default]+=" lsm=landlock,lockdown,yama,integrity,apparmor,bpf"'
         if ! grep -Fxq "$APPARMOR_BOOT_LINE" "$APPARMOR_BOOT_CONF" 2>/dev/null; then
             mkdir -p /etc/limine-entry-tool.d

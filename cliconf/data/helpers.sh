@@ -94,7 +94,7 @@ HELP
 		;;
 	ai)
 		cat << 'HELP'
-AI CLI - no exceptions: default TUI only, no omablot themes.
+AI CLI - no exceptions: default TUI only, no omaconf themes.
   Open the built-in help inside the app you are using.
 HELP
 		;;

@@ -24,7 +24,7 @@ assert_true "i18n library leaves caller shell options untouched" \
     "bash -c 'set +e +u; source \"$LIB_DIR/i18n.sh\"; [[ \$- != *e* && \$- != *u* ]]'"
 assert_true "locale map library leaves caller shell options untouched" \
     "bash -c 'set +e +u; source \"$LIB_DIR/locale-map.sh\"; [[ \$- != *e* && \$- != *u* ]]'"
-assert_file_contains "i18n library declares associative array" "$LIB_DIR/i18n.sh" "declare -gA OMABLOT_I18N"
+assert_file_contains "i18n library declares associative array" "$LIB_DIR/i18n.sh" "declare -gA OMACONF_I18N"
 assert_file_contains "i18n library defines t()" "$LIB_DIR/i18n.sh" "^t\(\) \{"
 assert_file_contains "i18n library defines log()" "$LIB_DIR/i18n.sh" "^log\(\) \{"
 assert_file_contains "i18n library defines warn()" "$LIB_DIR/i18n.sh" "^warn\(\) \{"
@@ -62,16 +62,16 @@ done
 render() {
     local lang="$1"
     shift
-    OMABLOT_LANG="$lang" bash "$LIB_DIR/i18n.sh" --render "$@" 2>/dev/null
+    OMACONF_LANG="$lang" bash "$LIB_DIR/i18n.sh" --render "$@" 2>/dev/null
 }
 
-MSG_COUNT_IT=$(OMABLOT_LANG=it bash "$LIB_DIR/i18n.sh" 2>/dev/null | sed -n 's/^messages=//p')
-FALLBACK_LANG=$(OMABLOT_LANG=zz bash "$LIB_DIR/i18n.sh" 2>/dev/null | sed -n 's/^language=//p')
-WARNING_IT=$(OMABLOT_LANG=it bash -c 'source "$1/i18n.sh"; i18n_init >/dev/null 2>&1; t "__warning"' _ "$LIB_DIR")
-ERROR_DE=$(OMABLOT_LANG=de bash -c 'source "$1/i18n.sh"; i18n_init >/dev/null 2>&1; t "__error"' _ "$LIB_DIR")
-UNKNOWN_IT=$(OMABLOT_LANG=it bash -c 'source "$1/i18n.sh"; i18n_init >/dev/null 2>&1; t "totally.unknown.key"' _ "$LIB_DIR")
-PKG_IT=$(OMABLOT_LANG=it bash -c 'source "$1/i18n.sh"; i18n_init >/dev/null 2>&1; t "check.pkg_installed" "brave-origin"' _ "$LIB_DIR")
-HELP_IT=$(OMABLOT_LANG=it bash "$LIB_DIR/help.sh" 2>/dev/null | sed -n 's/^  setup *//p')
+MSG_COUNT_IT=$(OMACONF_LANG=it bash "$LIB_DIR/i18n.sh" 2>/dev/null | sed -n 's/^messages=//p')
+FALLBACK_LANG=$(OMACONF_LANG=zz bash "$LIB_DIR/i18n.sh" 2>/dev/null | sed -n 's/^language=//p')
+WARNING_IT=$(OMACONF_LANG=it bash -c 'source "$1/i18n.sh"; i18n_init >/dev/null 2>&1; t "__warning"' _ "$LIB_DIR")
+ERROR_DE=$(OMACONF_LANG=de bash -c 'source "$1/i18n.sh"; i18n_init >/dev/null 2>&1; t "__error"' _ "$LIB_DIR")
+UNKNOWN_IT=$(OMACONF_LANG=it bash -c 'source "$1/i18n.sh"; i18n_init >/dev/null 2>&1; t "totally.unknown.key"' _ "$LIB_DIR")
+PKG_IT=$(OMACONF_LANG=it bash -c 'source "$1/i18n.sh"; i18n_init >/dev/null 2>&1; t "check.pkg_installed" "brave-origin"' _ "$LIB_DIR")
+HELP_IT=$(OMACONF_LANG=it bash "$LIB_DIR/help.sh" 2>/dev/null | sed -n 's/^  setup *//p')
 
 eq() { [[ "$1" == "$2" ]]; }
 ne() { [[ -n "$1" && "$1" != "$2" ]]; }
@@ -87,7 +87,7 @@ COMPLETE_PT="$(render pt '__complete')"
 SUMMARY_IT="$(render it 'verify.passed_summary' '7' '2')"
 KEYMAP_IT="$(render it 'locale.keymap' 'it')"
 
-assert_true "engine detects OMABLOT_LANG override"    "eq \"\$COMPLETE_IT\" 'Hardening completato. Riavvio necessario.'"
+assert_true "engine detects OMACONF_LANG override"    "eq \"\$COMPLETE_IT\" 'Hardening completato. Riavvio necessario.'"
 assert_true "engine renders english"                   "eq \"\$COMPLETE_EN\" 'Hardening complete. Reboot required.'"
 assert_true "engine renders french"                   "ne \"\$COMPLETE_FR\" \"\$COMPLETE_EN\""
 assert_true "engine renders german"                   "ne \"\$COMPLETE_DE\" \"\$COMPLETE_EN\""
@@ -101,12 +101,12 @@ assert_true "engine falls back for unsupported language" "eq \"\$FALLBACK_LANG\"
 assert_true "engine loads the full catalog"           "[[ \"\$MSG_COUNT_IT\" -gt 300 ]]"
 assert_true "warning label is localized"              "eq \"\$WARNING_IT\" 'Attenzione'"
 assert_true "error label is localized"                "eq \"\$ERROR_DE\" 'Fehler'"
-LIST_IT="$(OMABLOT_LANG=it bash "$LIB_DIR/i18n.sh" --list 2>/dev/null)"
+LIST_IT="$(OMACONF_LANG=it bash "$LIB_DIR/i18n.sh" --list 2>/dev/null)"
 assert_true "engine lists available languages"       "list_contains \"\$LIST_IT\" 'Lingue disponibili'"
 assert_true "engine marks the current language"      "list_marks \"\$LIST_IT\" it '(corrente)'"
 assert_true "make lang target lists languages"       "grep -q 'i18n.sh --list' '$PROJECT_DIR/Makefile'"
-BOOT_IT="$(OMABLOT_LANG=it bash -c 'SCRIPT_DIR="$1"; source "$2"; t "__complete"' _ "$LIB_DIR" "$LIB_DIR/i18n-boot.sh" 2>/dev/null)"
-BOOT_STUB="$(SCRIPT_DIR=/nonexistent OMABLOT_LANG=it bash -c 'source "$1"; warn stub' _ "$LIB_DIR/i18n-boot.sh" 2>&1)"
+BOOT_IT="$(OMACONF_LANG=it bash -c 'SCRIPT_DIR="$1"; source "$2"; t "__complete"' _ "$LIB_DIR" "$LIB_DIR/i18n-boot.sh" 2>/dev/null)"
+BOOT_STUB="$(SCRIPT_DIR=/nonexistent OMACONF_LANG=it bash -c 'source "$1"; warn stub' _ "$LIB_DIR/i18n-boot.sh" 2>&1)"
 assert_true "boot shim resolves the library catalog"    "eq \"\$BOOT_IT\" 'Hardening completato. Riavvio necessario.'"
 assert_true "boot shim degrades to an english stub"     "eq \"\$BOOT_STUB\" 'Warning: stub'"
 assert_true "boot shim keeps working under strict mode" "bash -c 'set -euo pipefail; SCRIPT_DIR=\"\$1\"; source \"\$1/i18n-boot.sh\"; t ok' _ '$LIB_DIR'"
@@ -130,7 +130,7 @@ done
 
 for hook in hooks/theme-set.d/folder-color hooks/theme-set.d/micro-theme hooks/theme-set.d/btop-theme \
             hooks/theme-set.d/shell-icons hooks/theme-set.d/yazi-theme hooks/theme-set.d/cli-theme \
-            hooks/pre-refresh-pacman.d/99-omablot-persist hooks/post-update.d/99-omablot-persist; do
+            hooks/pre-refresh-pacman.d/99-omaconf-persist hooks/post-update.d/99-omaconf-persist; do
     assert_file_contains "$(basename "$(dirname "$hook")")/$(basename "$hook") bootstraps i18n" "$PROJECT_DIR/$hook" "i18n-boot.sh"
 done
 
@@ -165,7 +165,7 @@ assert_file_contains "locale map detects the system timezone" "$PROJECT_DIR/scri
 assert_true "locale map is side effect free" "! grep -qE '(^|[[:space:]])(rm|mv|cp|sed -i|tee|localectl|locale-gen)([[:space:]]|$)' '$PROJECT_DIR/scripts/lib/locale-map.sh'"
 assert_file_contains "locale module writes locale.conf" "$PROJECT_DIR/scripts/modules/05-locale.sh" "/etc/locale.conf"
 assert_file_contains "locale module writes vconsole.conf" "$PROJECT_DIR/scripts/modules/05-locale.sh" "/etc/vconsole.conf"
-assert_file_contains "locale module writes profile snippet" "$PROJECT_DIR/scripts/modules/05-locale.sh" "omablot-locale.sh"
+assert_file_contains "locale module writes profile snippet" "$PROJECT_DIR/scripts/modules/05-locale.sh" "omaconf-locale.sh"
 assert_file_contains "locale module enables locale.gen entries" "$PROJECT_DIR/scripts/modules/05-locale.sh" "locale_enable_gen\(\)"
 assert_file_contains "locale module applies Hyprland kb_layout" "$PROJECT_DIR/scripts/modules/05-locale.sh" "kb_layout"
 assert_file_contains "locale map keeps a us locale entry for us zones" "$PROJECT_DIR/scripts/lib/locale-map.sh" "en_US.UTF-8"
@@ -200,7 +200,7 @@ tz_resolve() {
 }
 
 no_legacy_marker() {
-    ! grep -q 'omablot locale layout' "$1" 2>/dev/null
+    ! grep -q 'omaconf locale layout' "$1" 2>/dev/null
 }
 
 assert_tz() {
@@ -220,20 +220,20 @@ assert_tz "Asia/Dubai"           "ar_AE.UTF-8" "ara"        "ae"
 assert_tz "Australia/Sydney"     "en_AU.UTF-8" "us"         "us"
 
 assert_true "locale map honours the forced timezone override" \
-    "eq \"\$(OMABLOT_FORCE_TZ=Europe/Berlin bash -c 'source \"$PROJECT_DIR/scripts/lib/locale-map.sh\"; detect_system_timezone')\" 'Europe/Berlin'"
+    "eq \"\$(OMACONF_FORCE_TZ=Europe/Berlin bash -c 'source \"$PROJECT_DIR/scripts/lib/locale-map.sh\"; detect_system_timezone')\" 'Europe/Berlin'"
 
 test_section "Desktop Locale Application"
 
 LOCALE_MODULE="$PROJECT_DIR/scripts/modules/05-locale.sh"
 
-assert_file_contains "locale module is importable without side effects" "$LOCALE_MODULE" 'OMABLOT_LOCALE_LIB_ONLY'
+assert_file_contains "locale module is importable without side effects" "$LOCALE_MODULE" 'OMACONF_LOCALE_LIB_ONLY'
 assert_file_contains "locale module passes the resolved xkb layout, not the console keymap" "$LOCALE_MODULE" 'LOCALE_TARGET. ..LOCALE_XKB'
 assert_file_not_contains "locale module never re-resolves xkb from a keymap" "$LOCALE_MODULE" 'resolve_target_xkb "$keymap"'
 assert_file_contains "locale module exports the language to the desktop session" "$LOCALE_MODULE" 'hl.env\("LANG"'
 
 apply_locale() {
     local homes="$1"
-    OMABLOT_LOCALE_LIB_ONLY=1 OMABLOT_HOMES_ROOT="$homes" bash -c '
+    OMACONF_LOCALE_LIB_ONLY=1 OMACONF_HOMES_ROOT="$homes" bash -c '
         log() { :; }; warn() { :; }; err() { :; }
         source "'"$LOCALE_MODULE"'"
         locale_apply_hyprland "$(resolve_target_locale Europe/Rome)" "$(resolve_target_xkb Europe/Rome)"
@@ -255,16 +255,16 @@ assert_file_contains "desktop session gets the italian LANGUAGE" "$INPUT_LUA" 'h
 apply_locale "$HOMES_TMP"
 apply_locale "$HOMES_TMP"
 assert_true "locale block stays idempotent across repeated runs" \
-    "eq \"\$(grep -cE '^-- omablot locale \\(managed\\)$' '$INPUT_LUA')\" 1"
+    "eq \"\$(grep -cE '^-- omaconf locale \\(managed\\)$' '$INPUT_LUA')\" 1"
 assert_true "locale block does not grow across repeated runs" \
     "eq \"\$(wc -c < '$INPUT_LUA')\" '$FIRST_SIZE'"
 
-printf -- '-- omablot locale layout (managed)\nhl.config({\n  input = {\n    kb_layout = "us",\n  },\n})\n-- end omablot locale layout (managed)\n' > "$INPUT_LUA"
+printf -- '-- omaconf locale layout (managed)\nhl.config({\n  input = {\n    kb_layout = "us",\n  },\n})\n-- end omaconf locale layout (managed)\n' > "$INPUT_LUA"
 apply_locale "$HOMES_TMP"
 assert_true "legacy locale block marker is migrated away" "no_legacy_marker '$INPUT_LUA'"
 assert_file_contains "legacy us layout is replaced by the resolved layout" "$INPUT_LUA" 'kb_layout = "it"'
 assert_true "migration leaves exactly one managed block" \
-    "eq \"\$(grep -cE '^-- omablot locale \\(managed\\)$' '$INPUT_LUA')\" 1"
+    "eq \"\$(grep -cE '^-- omaconf locale \\(managed\\)$' '$INPUT_LUA')\" 1"
 
 rm -rf "$HOMES_TMP"
 

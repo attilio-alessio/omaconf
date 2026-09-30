@@ -1,6 +1,6 @@
 # obscure.yazi
 
-Yazi previewer plugin shipped by the `omablot/obscure` microcomponent.
+Yazi previewer plugin shipped by the `omaconf/obscure` microcomponent.
 
 Any file whose name matches `~/.config/obscure/patterns` with backup codes and recovery keys and passwords and secrets renders a lock screen instead of a preview, so shoulder surfers never see sensitive content on hover.
 

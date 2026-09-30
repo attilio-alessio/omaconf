@@ -49,10 +49,10 @@ if [[ -w "$BASE_MANIFEST" ]]; then
 fi
 
 log "debloat.pin"
-mkdir -p /etc/pacman.d/omablot
-chmod 755 /etc/pacman.d/omablot 2>/dev/null || warn "debloat.omablot_chmod_skipped"
-printf '%s\n' "${DEBLOAT[@]}" > /etc/pacman.d/omablot/ignore-pkgs.list
-chmod 644 /etc/pacman.d/omablot/ignore-pkgs.list 2>/dev/null || warn "debloat.ignore_chmod_skipped"
+mkdir -p /etc/pacman.d/omaconf
+chmod 755 /etc/pacman.d/omaconf 2>/dev/null || warn "debloat.omaconf_chmod_skipped"
+printf '%s\n' "${DEBLOAT[@]}" > /etc/pacman.d/omaconf/ignore-pkgs.list
+chmod 644 /etc/pacman.d/omaconf/ignore-pkgs.list 2>/dev/null || warn "debloat.ignore_chmod_skipped"
 EXISTING_PINS=""
 if grep -q '^IgnorePkg' /etc/pacman.conf 2>/dev/null; then
     EXISTING_PINS=$(grep '^IgnorePkg' /etc/pacman.conf | head -1 | sed 's/^IgnorePkg[[:space:]]*=[[:space:]]*//')
@@ -109,10 +109,10 @@ for u_home in /home/*; do
     _u=$(basename "$u_home")
     for hook_kind in pre-refresh-pacman.d post-update.d; do
         mkdir -p "$u_home/.config/omarchy/hooks/$hook_kind"
-        if [[ -f "$PROJECT_DIR/hooks/$hook_kind/99-omablot-persist" ]]; then
-            cp "$PROJECT_DIR/hooks/$hook_kind/99-omablot-persist" "$u_home/.config/omarchy/hooks/$hook_kind/99-omablot-persist"
-            chmod +x "$u_home/.config/omarchy/hooks/$hook_kind/99-omablot-persist"
-            chown "$_u":"$_u" "$u_home/.config/omarchy/hooks/$hook_kind/99-omablot-persist" 2>/dev/null || warn "debloat.hook_chown_failed" "$_u"
+        if [[ -f "$PROJECT_DIR/hooks/$hook_kind/99-omaconf-persist" ]]; then
+            cp "$PROJECT_DIR/hooks/$hook_kind/99-omaconf-persist" "$u_home/.config/omarchy/hooks/$hook_kind/99-omaconf-persist"
+            chmod +x "$u_home/.config/omarchy/hooks/$hook_kind/99-omaconf-persist"
+            chown "$_u":"$_u" "$u_home/.config/omarchy/hooks/$hook_kind/99-omaconf-persist" 2>/dev/null || warn "debloat.hook_chown_failed" "$_u"
         fi
     done
 done

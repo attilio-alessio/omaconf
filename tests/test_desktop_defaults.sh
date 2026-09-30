@@ -17,7 +17,7 @@ assert_file_contains "env module defines the per-user command helper" "$ENV_MODU
 assert_file_contains "per-user helper forwards HOME" "$ENV_MODULE" 'HOME=.home.'
 assert_file_contains "per-user helper forwards the runtime dir" "$ENV_MODULE" 'XDG_RUNTIME_DIR=.runtime.'
 assert_file_contains "per-user helper forwards the session bus" "$ENV_MODULE" 'DBUS_SESSION_BUS_ADDRESS=.bus.'
-assert_file_contains "per-user helper forwards the active language" "$ENV_MODULE" 'OMABLOT_LANG=.OMABLOT_LANG.'
+assert_file_contains "per-user helper forwards the active language" "$ENV_MODULE" 'OMACONF_LANG=.OMACONF_LANG.'
 assert_file_contains "omarchy_as delegates to the per-user helper" "$ENV_MODULE" 'OMARCHY_PATH=.OMARCHY_PATH. omarchy'
 
 assert_file_contains "theming runs hooks through the per-user helper" "$THEMING_MODULE" 'user_as .._user. bash .._hook_dir/.hook_name.'
@@ -32,13 +32,13 @@ SHELL_PLUGINS_MODULE="$PROJECT_DIR/scripts/modules/35-shell-plugins.sh"
 assert_file_not_contains "defaults never sets the browser as root" "$DEFAULTS_MODULE" 'omarchy default browser'
 
 assert_file_contains "debloat module merges pins instead of overwriting" "$DEBLOAT_MODULE" "EXISTING_PINS"
-assert_file_contains "debloat module installs persistence hooks" "$DEBLOAT_MODULE" "99-omablot-persist"
+assert_file_contains "debloat module installs persistence hooks" "$DEBLOAT_MODULE" "99-omaconf-persist"
 assert_file_contains "yaziconf installer enforces yazi file manager" "$PROJECT_DIR/yaziconf/install.sh" 'inode/directory'
 assert_file_contains "yaziconf installer pins the terminal desktop entry" "$PROJECT_DIR/yaziconf/install.sh" 'FM_DESKTOP="yazi-terminal.desktop"' 
 assert_file_contains "yaziconf installer registers the desktop entry" "$PROJECT_DIR/yaziconf/install.sh" "xdg-mime default"
 assert_file_contains "defaults module records file-manager state" "$DEFAULTS_MODULE" "defaults/file-manager"
-assert_file_contains "defaults module rebinds file manager keys to yazi" "$DEFAULTS_MODULE" "omablot-yazi-fm"
-assert_file_contains "shell plugins module uses canonical omamp source" "$SHELL_PLUGINS_MODULE" "omablot/omamp.git"
+assert_file_contains "defaults module rebinds file manager keys to yazi" "$DEFAULTS_MODULE" "omaconf-yazi-fm"
+assert_file_contains "shell plugins module uses canonical omamp source" "$SHELL_PLUGINS_MODULE" "omaconf/omamp.git"
 assert_file_contains "env module defines omarchy_as helper" "$PROJECT_DIR/scripts/modules/00-env.sh" "omarchy_as\(\)"
 assert_file_contains "omarchy_as forwards the user session bus" "$PROJECT_DIR/scripts/modules/00-env.sh" "DBUS_SESSION_BUS_ADDRESS"
 assert_file_contains "defaults module routes browser through omarchy_as" "$DEFAULTS_MODULE" "omarchy_as"
@@ -46,12 +46,12 @@ assert_file_contains "setup.sh references nvim module" "$PROJECT_DIR/scripts/set
 assert_file_contains "setup.sh references shell plugins module" "$PROJECT_DIR/scripts/setup.sh" "35-shell-plugins.sh"
 assert_file_contains "nvim module provisions root nvimconf" "$PROJECT_DIR/scripts/modules/33-nvim.sh" "nvimconf/install.sh"
 
-PERSIST_PRE="$PROJECT_DIR/hooks/pre-refresh-pacman.d/99-omablot-persist"
+PERSIST_PRE="$PROJECT_DIR/hooks/pre-refresh-pacman.d/99-omaconf-persist"
 assert_file_exists "pre-refresh persist hook exists in repo" "$PERSIST_PRE"
 assert_file_executable "pre-refresh persist hook executable" "$PERSIST_PRE"
 assert_file_contains "pre-refresh hook re-merges IgnorePkg" "$PERSIST_PRE" "IgnorePkg"
 
-PERSIST_POST="$PROJECT_DIR/hooks/post-update.d/99-omablot-persist"
+PERSIST_POST="$PROJECT_DIR/hooks/post-update.d/99-omaconf-persist"
 assert_file_exists "post-update persist hook exists in repo" "$PERSIST_POST"
 assert_file_executable "post-update persist hook executable" "$PERSIST_POST"
 assert_file_contains "post-update hook reapplies yazi default" "$PERSIST_POST" "yazi-terminal.desktop inode/directory"
@@ -101,7 +101,7 @@ if [[ -x "$OMAQT_DIR/install.sh" ]]; then
     assert_file_contains "omaqt installer cleans stale KDE hooks" "$OMAQT_DIR/install.sh" "kde-folder-color"
 fi
 
-if command -v pacman &>/dev/null && [[ -f /etc/arch-release ]] && [[ -f /etc/pacman.d/omablot/ignore-pkgs.list ]]; then
+if command -v pacman &>/dev/null && [[ -f /etc/arch-release ]] && [[ -f /etc/pacman.d/omaconf/ignore-pkgs.list ]]; then
     for app in yazi zathura imv mpv papirus-icon-theme; do
         assert_true "$app installed" "pacman -Q $app &>/dev/null"
     done

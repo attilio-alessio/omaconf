@@ -26,8 +26,8 @@ check() {
 section() { printf '%b\n' "\n${BOLD}$1${NC}"; }
 
 section "Battery Charge Threshold"
-check "power.conf policy exists" "[[ -f /etc/omablot/power.conf ]]"
-check "power.conf defines charge limit" "grep -q 'BATTERY_CHARGE_LIMIT=75' /etc/omablot/power.conf 2>/dev/null"
+check "power.conf policy exists" "[[ -f /etc/omaconf/power.conf ]]"
+check "power.conf defines charge limit" "grep -q 'BATTERY_CHARGE_LIMIT=75' /etc/omaconf/power.conf 2>/dev/null"
 check "battery charge udev rule exists" "[[ -f /etc/udev/rules.d/98-battery-charge-threshold.rules ]]"
 check "battery charge tmpfiles exists" "[[ -f /etc/tmpfiles.d/battery-charge-threshold.conf ]]"
 check "battery service enabled" "systemctl is-enabled battery-charge-threshold.service &>/dev/null || [[ -L /etc/systemd/system/multi-user.target.wants/battery-charge-threshold.service ]]"
@@ -36,11 +36,11 @@ if ls /sys/class/power_supply/BAT*/charge_control_end_threshold &>/dev/null; the
 fi
 
 section "Low-Battery Session Protection"
-check "low-battery hibernate policy exists" "[[ -f /etc/UPower/UPower.conf.d/99-omablot-low-battery.conf ]]"
-check "low-battery action is hibernate" "grep -q '^CriticalPowerAction=Hibernate' /etc/UPower/UPower.conf.d/99-omablot-low-battery.conf 2>/dev/null"
-check "low-battery warning at 20 percent" "grep -q '^PercentageLow=20' /etc/UPower/UPower.conf.d/99-omablot-low-battery.conf 2>/dev/null"
-check "low-battery critical at 10 percent" "grep -q '^PercentageCritical=10' /etc/UPower/UPower.conf.d/99-omablot-low-battery.conf 2>/dev/null"
-check "hibernate action at 5 percent" "grep -q '^PercentageAction=5' /etc/UPower/UPower.conf.d/99-omablot-low-battery.conf 2>/dev/null"
+check "low-battery hibernate policy exists" "[[ -f /etc/UPower/UPower.conf.d/99-omaconf-low-battery.conf ]]"
+check "low-battery action is hibernate" "grep -q '^CriticalPowerAction=Hibernate' /etc/UPower/UPower.conf.d/99-omaconf-low-battery.conf 2>/dev/null"
+check "low-battery warning at 20 percent" "grep -q '^PercentageLow=20' /etc/UPower/UPower.conf.d/99-omaconf-low-battery.conf 2>/dev/null"
+check "low-battery critical at 10 percent" "grep -q '^PercentageCritical=10' /etc/UPower/UPower.conf.d/99-omaconf-low-battery.conf 2>/dev/null"
+check "hibernate action at 5 percent" "grep -q '^PercentageAction=5' /etc/UPower/UPower.conf.d/99-omaconf-low-battery.conf 2>/dev/null"
 
 section "Runtime Performance"
 check "perf sysctl persisted" "[[ -f /etc/sysctl.d/99-perf.conf ]]"

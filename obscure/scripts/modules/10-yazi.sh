@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-MARK_BEGIN="# >>> omablot obscure >>>"
-MARK_END="# <<< omablot obscure <<<"
+MARK_BEGIN="# >>> omaconf obscure >>>"
+MARK_END="# <<< omaconf obscure <<<"
 PATTERNS_FILE="$PROJECT_DIR/data/patterns"
 PLUGIN_SRC="$PROJECT_DIR/data/obscure.yazi"
 

@@ -40,9 +40,9 @@ if [[ -x "$PROJECT_DIR/hooks/theme-set.d/micro-theme" ]]; then
 fi
 
 if [[ -f "$HOME/.bashrc" ]]; then
-    sed -i "\|# >>> omablot micro >>>|,\|# <<< omablot micro <<<|d" "$HOME/.bashrc"
+    sed -i "\|# >>> omaconf micro >>>|,\|# <<< omaconf micro <<<|d" "$HOME/.bashrc"
     cat >> "$HOME/.bashrc" << 'SHELLBLOCK'
-# >>> omablot micro >>>
+# >>> omaconf micro >>>
 function mh() {
 	cat << 'HELP'
 micro - essentials                        splits and more
@@ -55,7 +55,7 @@ micro - essentials                        splits and more
   Ctrl-g ......... full help inside micro
 HELP
 }
-# <<< omablot micro <<<
+# <<< omaconf micro <<<
 SHELLBLOCK
 fi
 

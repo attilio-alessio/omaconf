@@ -5,7 +5,7 @@ SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
 PLUGINS_DIR="$CONFIG_DIR/lua/plugins"
 SKEL_DIR="/etc/skel/.config/nvim"
-HELPER_FILES="omablot-helpers.lua omablot-completion.lua"
+HELPER_FILES="omaconf-helpers.lua omaconf-completion.lua"
 
 I18N_LIB="$(dirname "$SCRIPT_DIR")/scripts/lib"
 # shellcheck source=/dev/null

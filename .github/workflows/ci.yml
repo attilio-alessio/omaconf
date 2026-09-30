@@ -107,4 +107,4 @@ jobs:
       - arch-container-validation
     steps:
       - name: CI Success Assertion
-        run: echo "All omablot CI jobs and test suites completed successfully."
+        run: echo "All omaconf CI jobs and test suites completed successfully."

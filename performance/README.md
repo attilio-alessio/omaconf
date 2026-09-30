@@ -30,24 +30,24 @@ Real file for energy module holds real actions in order with policy folder creat
 Inspection code without comments:
 
 ```bash
-cat /etc/omablot/power.conf
+cat /etc/omaconf/power.conf
 cat /etc/udev/rules.d/98-battery-charge-threshold.rules
 cat /etc/tmpfiles.d/battery-charge-threshold.conf
 cat /etc/systemd/system/battery-charge-threshold.service
 systemctl is-enabled battery-charge-threshold.service
 cat /sys/class/power_supply/BAT0/charge_control_end_threshold
-cat /etc/UPower/UPower.conf.d/99-omablot-low-battery.conf
+cat /etc/UPower/UPower.conf.d/99-omaconf-low-battery.conf
 systemctl status upower.service
 ```
 
 Real generated files:
 
 ```bash
-ls /etc/omablot/power.conf
+ls /etc/omaconf/power.conf
 ls /etc/udev/rules.d/98-battery-charge-threshold.rules
 ls /etc/tmpfiles.d/battery-charge-threshold.conf
 ls /etc/systemd/system/battery-charge-threshold.service
-ls /etc/UPower/UPower.conf.d/99-omablot-low-battery.conf
+ls /etc/UPower/UPower.conf.d/99-omaconf-low-battery.conf
 ```
 
 Idempotence holds full deterministic overwrite and repeated enables as null and same value write as null.
@@ -103,4 +103,4 @@ bash tests/test_power_policy.sh
 bash tests/test_performance_tuning.sh
 ```
 
-Operating rules in `AGENTS.md` and runbook in `.skills/power-performance`. Family contract in profile repo `omablot/.github` inside `docs`.
+Operating rules in `AGENTS.md` and runbook in `.skills/power-performance`. Family contract in profile repo `omaconf/.github` inside `docs`.

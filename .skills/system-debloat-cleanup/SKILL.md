@@ -16,4 +16,4 @@ Web application desktop shortcuts installed under `/usr/share/omarchy/applicatio
 Unneeded software packages including Chromium, the GNOME desktop stack (Nautilus, Totem, Evince, Eog, Yaru icon theme), the KDE stack (Dolphin, Okular, Gwenview, xdg-desktop-portal-kde, plasma-integration, breeze, breeze-gtk, Haruna), system-config-printer, Kdenlive, OBS Studio, LibreOffice, and Obsidian are cleanly removed from the package database. The provisioned stack is CLI/TUI only with Brave Origin as browser, Micro, Yazi, imv, mpv, Zathura, Neovim, omarchy-nvim, Herdr, and Gum. The container runtime is podman; docker is never provisioned.
 
 ## Pacman Persistence
-To ensure removed packages are not pulled back into the system during subsequent system upgrades, package names are listed inside `/etc/pacman.d/omablot/ignore-pkgs.list` and pinned directly into `/etc/pacman.conf` within the `IgnorePkg` directive.
+To ensure removed packages are not pulled back into the system during subsequent system upgrades, package names are listed inside `/etc/pacman.d/omaconf/ignore-pkgs.list` and pinned directly into `/etc/pacman.conf` within the `IgnorePkg` directive.
