@@ -1,0 +1,36 @@
+version: 2
+updates:
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps)"
+    ignore:
+      # Ignore certain versions if needed
+      # - dependency-name: "actions/checkout"
+      #   versions: [">= 8.0.0"]
+
+  # Maintain Docker images (if used)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    ignore:
+      # Ignore certain versions if needed
+      # - dependency-name: "archlinux"
+      #   versions: [">= 2024.01.01"]
+
+  # Maintain other dependencies (if any)
+  - package-ecosystem: "pip"  # Python dependencies for potential future use
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
