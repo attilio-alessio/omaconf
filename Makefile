@@ -2,7 +2,18 @@ SHELL := /bin/bash
 
 .DEFAULT_GOAL := help
 
-.PHONY: help setup verify test hook icons theme zed micro nvim yazi cli editors clean lang i18n-status
+.PHONY: help setup verify test hook icons theme zed micro nvim yazi cli editors clean lang i18n-status lint
+
+lint:
+	@if ! command -v shellcheck &> /dev/null; then \
+		echo "shellcheck not found. Install with: sudo pacman -S shellcheck (or use CI)"; \
+		exit 1; \
+	fi
+	shellcheck --severity=style \
+		scripts/*.sh scripts/lib/*.sh scripts/modules/*.sh \
+		hooks/theme-set.d/* hooks/pre-refresh-pacman.d/* hooks/post-update.d/* \
+		zedconf/*.sh microconf/*.sh nvimconf/*.sh yaziconf/*.sh cliconf/*.sh \
+		tests/*.sh
 
 help:
 	@bash scripts/lib/help.sh

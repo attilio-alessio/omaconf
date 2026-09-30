@@ -6,13 +6,23 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+  # Needed to get the OIDC token for some actions if we ever add them
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   syntax-integrity:
     name: Syntax & Code Integrity
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Validate Shell Syntax
         run: |
@@ -27,23 +37,36 @@ jobs:
   shellcheck-analysis:
     name: ShellCheck Static Analysis
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      - name: Install ShellCheck
-        run: sudo apt-get update && sudo apt-get install -y shellcheck
+      - name: Install ShellCheck (v0.11.0)
+        run: |
+          SHELLCHECK_VERSION="v0.11.0"
+          SHELLCHECK_SHA256="2107180ddcd938ef32b7e791b3bd5add038ebfeca725471fd27936b77cbfb5a"
+          curl -fL -o shellcheck.tar.xz "https://github.com/koalaman/shellcheck/releases/download/${SHELLCHECK_VERSION}/shellcheck-${SHELLCHECK_VERSION}.linux.x86_64.tar.xz"
+          echo "${SHELLCHECK_SHA256}  shellcheck.tar.xz" | sha256sum -c -
+          tar -xf shellcheck.tar.xz
+          sudo cp "shellcheck-${SHELLCHECK_VERSION}/shellcheck" /usr/local/bin/
+          shellcheck --version
 
       - name: Run ShellCheck
         run: |
-          shellcheck -e SC1091 -e SC2034 -e SC2016 scripts/*.sh scripts/lib/*.sh scripts/modules/*.sh hooks/theme-set.d/* hooks/pre-refresh-pacman.d/* hooks/post-update.d/* zedconf/*.sh microconf/*.sh nvimconf/*.sh yaziconf/*.sh cliconf/*.sh tests/*.sh
+          shellcheck --severity=style \
+            scripts/*.sh scripts/lib/*.sh scripts/modules/*.sh \
+            hooks/theme-set.d/* hooks/pre-refresh-pacman.d/* hooks/post-update.d/* \
+            zedconf/*.sh microconf/*.sh nvimconf/*.sh yaziconf/*.sh cliconf/*.sh \
+            tests/*.sh
 
   idempotency-and-safety:
     name: Automation Safety & Idempotency Rules
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Run Idempotency & Safety Check
         run: bash tests/test_idempotency_safety.sh
@@ -51,9 +74,10 @@ jobs:
   modular-pipeline-integrity:
     name: Modular Pipeline & Power Policy
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Run Modular Architecture Tests
         run: bash tests/test_modular_pipeline.sh
@@ -67,9 +91,10 @@ jobs:
   theming-and-hook-engine:
     name: Desktop Theming & Micro Engine
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
@@ -80,8 +105,12 @@ jobs:
   arch-container-validation:
     name: Arch Linux Container Full Run
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     container:
       image: archlinux:latest
+      options: >-
+        --cap-add=SYS_PTRACE
+        --security-opt seccomp=unconfined
     steps:
       - name: Setup Arch Environment
         run: |
@@ -90,7 +119,7 @@ jobs:
           echo "testuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Run Full Test Suite
         run: bash tests/run-all.sh
@@ -98,10 +127,11 @@ jobs:
   ci-status-gate:
     name: CI Completion Status Gate
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs:
       - syntax-integrity
       - shellcheck-analysis
-      - idempotency-and-safety
+      - idempotent-and-safety
       - modular-pipeline-integrity
       - theming-and-hook-engine
       - arch-container-validation
