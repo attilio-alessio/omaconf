@@ -89,6 +89,11 @@ theming.cursor_skipped=gsettings cursor-theme skipped for %s
 theming.gtk_chown=chown gtk config failed for %s
 theming.icons_chown=chown icons failed for %s
 theming.hypr_chown=chown hyprland.lua failed for %s
+theming.preview_size=Normalizing stock theme preview size
+theming.preview_backup_failed=Theme preview backup failed for %s
+theming.preview_overlay_restored=Theme preview overlay restored for %s
+theming.preview_resize_failed=Theme preview resize failed for %s
+theming.preview_size_skipped=Theme preview size normalization skipped
 theming.hooks=Installing per-theme hooks (folder color and micro editor)
 theming.hook_failed=%s hook run failed for %s
 
@@ -265,6 +270,8 @@ hooks.portal_dirs_skipped=portal config dirs skipped for %s
 hooks.portal_config_reapply_skipped=termfilechooser config reapply skipped for %s
 hooks.portal_conf_reapply_skipped=portals.conf FileChooser reapply skipped for %s
 hooks.portal_header_skipped=portals.conf header skipped for %s
+hooks.preview_size_reapply_skipped=Theme preview size reapply skipped
+hooks.preview_size_reapply_root_skipped=Theme preview size reapply skipped (needs root)
 hooks.portal_chown_failed=chown portal configs failed for %s
 
 install.theme_sync_skipped=Theme sync skipped

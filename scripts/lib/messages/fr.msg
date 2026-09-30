@@ -89,6 +89,11 @@ theming.cursor_skipped=gsettings cursor-theme ignoré pour %s
 theming.gtk_chown=échec du chown de la configuration GTK pour %s
 theming.icons_chown=échec du chown des icônes pour %s
 theming.hypr_chown=échec du chown de hyprland.lua pour %s
+theming.preview_size=Normalisation de la taille des aperçus de thème d'origine
+theming.preview_backup_failed=Échec de la sauvegarde de l'aperçu du thème pour %s
+theming.preview_overlay_restored=Aperçu du thème restauré pour %s
+theming.preview_resize_failed=Échec du redimensionnement de l'aperçu du thème pour %s
+theming.preview_size_skipped=Normalisation de la taille des aperçus de thème ignorée
 theming.hooks=Installation des hooks de thème (couleur des dossiers et éditeur micro)
 theming.hook_failed=hook %s en échec pour %s
 
@@ -265,6 +270,8 @@ hooks.portal_dirs_skipped=création des dossiers de configuration du portail ign
 hooks.portal_config_reapply_skipped=réapplication de la configuration termfilechooser ignorée pour %s
 hooks.portal_conf_reapply_skipped=réapplication de FileChooser dans portals.conf ignorée pour %s
 hooks.portal_header_skipped=en-tête portals.conf ignoré pour %s
+hooks.preview_size_reapply_skipped=Réapplication de la taille des aperçus de thème ignorée
+hooks.preview_size_reapply_root_skipped=Réapplication de la taille des aperçus de thème ignorée (nécessite root)
 hooks.portal_chown_failed=échec du chown des configurations du portail pour %s
 
 install.theme_sync_skipped=synchronisation du thème ignorée

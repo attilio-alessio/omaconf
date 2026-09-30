@@ -89,6 +89,11 @@ theming.cursor_skipped=gsettings cursor-theme übersprungen für %s
 theming.gtk_chown=chown der GTK-Konfiguration fehlgeschlagen für %s
 theming.icons_chown=chown der Icons fehlgeschlagen für %s
 theming.hypr_chown=chown von hyprland.lua fehlgeschlagen für %s
+theming.preview_size=Normalisierung der Größe der Original-Theme-Vorschauen
+theming.preview_backup_failed=Sicherung der Theme-Vorschau fehlgeschlagen für %s
+theming.preview_overlay_restored=Theme-Vorschau wiederhergestellt für %s
+theming.preview_resize_failed=Größenänderung der Theme-Vorschau fehlgeschlagen für %s
+theming.preview_size_skipped=Normalisierung der Größe der Theme-Vorschauen übersprungen
 theming.hooks=Installation der Theme-Hooks (Ordnerfarbe und Micro-Editor)
 theming.hook_failed=Hook %s fehlgeschlagen für %s
 
@@ -265,6 +270,8 @@ hooks.portal_dirs_skipped=Anlegen der Portal-Konfigurationsverzeichnisse übersp
 hooks.portal_config_reapply_skipped=Erneutes Anwenden der termfilechooser-Konfiguration übersprungen für %s
 hooks.portal_conf_reapply_skipped=Erneutes Anwenden von FileChooser in portals.conf übersprungen für %s
 hooks.portal_header_skipped=Kopfzeile von portals.conf übersprungen für %s
+hooks.preview_size_reapply_skipped=Erneutes Anwenden der Größe der Theme-Vorschauen übersprungen
+hooks.preview_size_reapply_root_skipped=Erneutes Anwenden der Größe der Theme-Vorschauen übersprungen (benötigt root)
 hooks.portal_chown_failed=chown der Portal-Konfigurationen fehlgeschlagen für %s
 
 install.theme_sync_skipped=Theme-Synchronisierung übersprungen
