@@ -1,0 +1,84 @@
+{
+  "disable_ai": true,
+  "base_keymap": "VSCode",
+  "icon_theme": "Zed (Default)",
+  "vim_mode": false,
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false,
+    "anthropic_retention": false
+  },
+  "buffer.zoomKey": "ctrl+shift+z",
+  "colorScheme": "Catppuccin Mocha",
+  "fontFamily": "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
+  "fontSize": 14,
+  "theme": {
+    "mode": "system",
+    "light": "Ayu Light",
+    "dark": "Ayu Dark"
+  },
+  "editor.cursorStyle": "block",
+  "editor.cursorBlinking": "smooth",
+  "editor.lineHeight": 22,
+  "editor.wordWrap": "on",
+  "editor.formatOnSave": true,
+  "editor.rulers": [
+    80,
+    120
+  ],
+  "editor.minimap.enabled": false,
+  "editor.scrollbar.verticalScrollbarSize": 8,
+  "editor.scrollbar.horizontalScrollbarSize": 8,
+  "editor.glyphMargin": false,
+  "editor.stickyScroll.enabled": true,
+  "terminal.integrated.fontFamily": "'JetBrains Mono', 'Cascadia Code Mono', monospace",
+  "terminal.integrated.fontSize": 13,
+  "terminal.integrated.cursorStyle": "block",
+  "terminal.integrated.cursorBlinking": true,
+  "breadcrumbs.enabled": false,
+  "extensions.telemetry.enabled": false,
+  "window.title": "${dirty}${activeEditorShort}${separator}${rootName}",
+  "window.commandCenter": true,
+  "workbench.editor.labelFormat": "short",
+  "workbench.editor.smoothScrolling": true,
+  "workbench.editor.wrapTabs": false,
+  "workbench.editor.showTabs": "multiple",
+  "workbench.editor.tabSizing": "fit",
+  "workbench.editor.enablePreview": false,
+  "workbench.editor.enablePreviewFromQuickOpen": false,
+  "workbench.editor.scrollBeyondLastLine": false,
+  "workbench.editor.limitCountPerGroup": 10,
+  "workbench.editor.tabHeight": 32,
+  "workbench.panel.defaultLocation": "bottom",
+  "workbench.panel.position": "bottom",
+  "workbench.panel.autoHideDelay": 300,
+  "workbench.sideBar.location": "right",
+  "workbench.activityBar.location": "side",
+  "workbench.statusBar.visible": true,
+  "window.menuBarVisibility": "toggle",
+  "window.titleBarStyle": "custom",
+  "window.density.editorTabHeight": "compact",
+  "terminal.integrated.profiles.linux": {
+    "bash": {
+      "path": "bash",
+      "icon": "terminal-bash"
+    },
+    "zsh": {
+      "path": "zsh",
+      "icon": "terminal-bash"
+    },
+    "fish": {
+      "path": "fish",
+      "icon": "terminal-bash"
+    },
+    "toolbox": {
+      "path": "toolbox",
+      "args": [
+        "run",
+        "--container",
+        "development"
+      ],
+      "icon": "terminal-linux"
+    }
+  }
+}

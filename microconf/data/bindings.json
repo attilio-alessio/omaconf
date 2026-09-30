@@ -1,0 +1,18 @@
+{
+    "Ctrl-s": "Save",
+    "Ctrl-q": "Quit",
+    "Ctrl-z": "Undo",
+    "Ctrl-y": "Redo",
+    "Ctrl-f": "Find",
+    "Ctrl-n": "FindNext",
+    "Ctrl-p": "FindPrevious",
+    "Ctrl-a": "SelectAll",
+    "Ctrl-c": "Copy",
+    "Ctrl-x": "Cut",
+    "Ctrl-v": "Paste",
+    "Ctrl-k": "CutLine",
+    "Ctrl-d": "DuplicateLine",
+    "Ctrl-g": "ToggleHelp",
+    "Alt-g": "VSplit",
+    "Alt-h": "HSplit"
+}

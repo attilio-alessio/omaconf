@@ -1,0 +1,71 @@
+#!/bin/bash
+set -euo pipefail
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+OMABLOT_I18N_BOOT="${OMABLOT_I18N_BOOT:-$SCRIPT_DIR/../i18n/i18n-boot.sh}"
+[[ -f "$OMABLOT_I18N_BOOT" ]] || OMABLOT_I18N_BOOT="$SCRIPT_DIR/../../scripts/lib/i18n-boot.sh"
+if [[ -f "$OMABLOT_I18N_BOOT" ]]; then
+    . "$OMABLOT_I18N_BOOT"
+else
+    warn() { printf '%s: %s\n' "Warning" "$1" >&2; }
+fi
+
+if [[ -f "$HOME/.local/state/omarchy/current/theme.name" ]]; then
+    CURRENT_THEME=$(tr '[:upper:]' '[:lower:]' < "$HOME/.local/state/omarchy/current/theme.name" | tr ' ' '-')
+else
+    CURRENT_THEME=""
+fi
+[[ -n "$CURRENT_THEME" ]] || exit 0
+
+case "$CURRENT_THEME" in
+    catppuccin)              FOLDER_COLOR="blue" ;;
+    catppuccin-latte)        FOLDER_COLOR="blue" ;;
+    tokyo-night)             FOLDER_COLOR="purple" ;;
+    nord)                    FOLDER_COLOR="blue" ;;
+    gruvbox)                 FOLDER_COLOR="orange" ;;
+    everforest)              FOLDER_COLOR="green" ;;
+    kanagawa)                FOLDER_COLOR="pink" ;;
+    miasma)                  FOLDER_COLOR="grey" ;;
+    hackerman)               FOLDER_COLOR="green" ;;
+    ethereal)                FOLDER_COLOR="purple" ;;
+    lumon)                   FOLDER_COLOR="blue" ;;
+    ristretto)               FOLDER_COLOR="red" ;;
+    osaka-jade)              FOLDER_COLOR="green" ;;
+    solitude)                FOLDER_COLOR="grey" ;;
+    retro-82)                FOLDER_COLOR="orange" ;;
+    rose-pine)               FOLDER_COLOR="pink" ;;
+    white)                   FOLDER_COLOR="grey" ;;
+    flexoki-light)           FOLDER_COLOR="blue" ;;
+    last-horizon)            FOLDER_COLOR="grey" ;;
+    lupine)                  FOLDER_COLOR="purple" ;;
+    matte-black)             FOLDER_COLOR="orange" ;;
+    vantablack)              FOLDER_COLOR="grey" ;;
+    *)                       FOLDER_COLOR="blue" ;;
+esac
+
+TELA_SYS="/usr/share/icons/Tela-dark/scalable/places"
+[[ -d "$TELA_SYS" ]] || exit 0
+
+USER_ICONS="${XDG_DATA_HOME:-$HOME/.local/share}/icons/Tela-dark"
+PLACES="$USER_ICONS/scalable/places"
+mkdir -p "$PLACES"
+
+if [[ ! -e "$USER_ICONS/index.theme" ]]; then
+    ln -sfn /usr/share/icons/Tela-dark/index.theme "$USER_ICONS/index.theme"
+fi
+
+for src in "$TELA_SYS/${FOLDER_COLOR}-folder"*.svg; do
+    [[ -f "$src" ]] || continue
+    base=$(basename "$src")
+    suffix="${base#"${FOLDER_COLOR}-folder"}"
+    ln -sfn "$src" "$PLACES/folder${suffix}"
+    ln -sfn "$src" "$PLACES/default-folder${suffix}"
+done
+
+if [[ -f "$PLACES/folder.svg" ]]; then
+    ln -sfn "$PLACES/folder.svg" "$PLACES/inode-directory.svg"
+fi
+
+if command -v gtk-update-icon-cache &>/dev/null; then
+    gtk-update-icon-cache -q -f -t "$USER_ICONS" 2>/dev/null || warn "hooks.gtk_cache_failed"
+fi

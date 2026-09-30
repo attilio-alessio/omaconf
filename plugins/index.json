@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "plugins": [
+    {
+      "id": "krosci.omamp",
+      "name": "MediaPlayer",
+      "source": "https://github.com/omablot/omamp.git",
+      "path": "plugins/omamp",
+      "kind": "bar-widget",
+      "install": "omarchy plugin add https://github.com/omablot/omamp.git --enable --yes"
+    }
+  ]
+}

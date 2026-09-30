@@ -1,0 +1,171 @@
+#!/bin/bash
+set -euo pipefail
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+OMABLOT_I18N_BOOT="${OMABLOT_I18N_BOOT:-$SCRIPT_DIR/../i18n/i18n-boot.sh}"
+[[ -f "$OMABLOT_I18N_BOOT" ]] || OMABLOT_I18N_BOOT="$SCRIPT_DIR/../../scripts/lib/i18n-boot.sh"
+if [[ -f "$OMABLOT_I18N_BOOT" ]]; then
+    . "$OMABLOT_I18N_BOOT"
+else
+    warn() { printf '%s: %s\n' "Warning" "$1" >&2; }
+fi
+
+if [[ -f "$HOME/.local/state/omarchy/current/theme.name" ]]; then
+    CURRENT_THEME=$(tr '[:upper:]' '[:lower:]' < "$HOME/.local/state/omarchy/current/theme.name" | tr ' ' '-')
+else
+    CURRENT_THEME="default"
+fi
+[[ -n "$CURRENT_THEME" ]] || CURRENT_THEME="default"
+
+YAZI_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/yazi"
+THEME_FILE="$YAZI_CONFIG/theme.toml"
+
+mkdir -p "$YAZI_CONFIG"
+
+get_color() {
+    local key="$1" default="$2" toml="$3"
+    local val
+    val=$(grep -E "^[[:space:]]*${key}[[:space:]]*=" "$toml" 2>/dev/null | head -1 | sed -E 's/.*=[[:space:]]*"([^"]+)".*/\1/' || :)
+    if [[ -n "$val" ]]; then
+        printf '%s\n' "$val"
+    else
+        printf '%s\n' "$default"
+    fi
+}
+
+generate_yazi_theme() {
+    local toml="$1"
+    local out="$2"
+
+    local bg fg dark_bg light_bg selection muted accent red green yellow blue magenta cyan orange bright_fg
+
+    bg=$(get_color "background" "#1e1e2e" "$toml")
+    fg=$(get_color "foreground" "#cdd6f4" "$toml")
+    dark_bg=$(get_color "dark_background" "#161622" "$toml")
+    light_bg=$(get_color "lighter_background" "#313244" "$toml")
+    selection=$(get_color "selection" "#45475a" "$toml")
+    muted=$(get_color "muted" "#585b70" "$toml")
+    accent=$(get_color "accent" "#89b4fa" "$toml")
+    red=$(get_color "red" "#f38ba8" "$toml")
+    green=$(get_color "green" "#a6e3a1" "$toml")
+    yellow=$(get_color "yellow" "#f9e2af" "$toml")
+    blue=$(get_color "blue" "#89b4fa" "$toml")
+    magenta=$(get_color "magenta" "#f5c2e7" "$toml")
+    cyan=$(get_color "cyan" "#94e2d5" "$toml")
+    orange=$(get_color "orange" "#fab387" "$toml")
+    bright_fg=$(get_color "bright_foreground" "$fg" "$toml")
+
+    cat > "$out" << TOML
+[mgr]
+cwd = { fg = "${accent}", bold = true }
+find_keyword = { fg = "${yellow}", bold = true }
+find_position = { fg = "${orange}", bold = true }
+marker_copied = { fg = "${green}", bg = "${green}" }
+marker_cut = { fg = "${red}", bg = "${red}" }
+marker_marked = { fg = "${accent}", bg = "${accent}" }
+marker_selected = { fg = "${yellow}", bg = "${yellow}" }
+border_symbol = "│"
+border_style = { fg = "${muted}" }
+
+[indicator]
+preview = { bg = "${selection}" }
+current = { fg = "${bright_fg}", bg = "${selection}", bold = true }
+
+[tabs]
+active = { fg = "${bg}", bg = "${accent}", bold = true }
+inactive = { fg = "${muted}", bg = "${dark_bg}" }
+
+[status]
+sep_left = { open = "", close = "" }
+sep_right = { open = "", close = "" }
+progress_label = { fg = "${fg}", bold = true }
+progress_normal = { fg = "${accent}", bg = "${light_bg}" }
+progress_error = { fg = "${red}", bg = "${light_bg}" }
+perm_type = { fg = "${accent}" }
+perm_read = { fg = "${yellow}" }
+perm_write = { fg = "${red}" }
+perm_exec = { fg = "${green}" }
+perm_sep = { fg = "${muted}" }
+
+[mode]
+normal_main = { fg = "${bg}", bg = "${accent}", bold = true }
+normal_alt = { fg = "${bg}", bg = "${accent}", bold = true }
+select_main = { fg = "${bg}", bg = "${yellow}", bold = true }
+select_alt = { fg = "${bg}", bg = "${yellow}", bold = true }
+unset_main = { fg = "${bg}", bg = "${red}", bold = true }
+unset_alt = { fg = "${bg}", bg = "${red}", bold = true }
+
+[pick]
+border = { fg = "${accent}" }
+active = { fg = "${bright_fg}", bg = "${selection}" }
+inactive = { fg = "${fg}" }
+
+[input]
+border = { fg = "${accent}" }
+title = { fg = "${accent}" }
+value = { fg = "${fg}" }
+selected = { bg = "${selection}" }
+
+[cmp]
+border = { fg = "${accent}" }
+active = { fg = "${bright_fg}", bg = "${selection}" }
+inactive = { fg = "${fg}" }
+
+[tasks]
+border = { fg = "${accent}" }
+title = { fg = "${accent}" }
+hovered = { bg = "${selection}" }
+
+[which]
+mask = { bg = "${selection}" }
+cand = { fg = "${cyan}" }
+rest = { fg = "${muted}" }
+desc = { fg = "${magenta}" }
+separator = "  "
+separator_style = { fg = "${muted}" }
+
+[help]
+chord = { fg = "${accent}" }
+action = { fg = "${fg}" }
+hovered = { bg = "${selection}" }
+
+[filetype]
+rules = [
+  { mime = "image/*", fg = "${cyan}" },
+  { mime = "video/*", fg = "${yellow}" },
+  { mime = "audio/*", fg = "${orange}" },
+  { mime = "application/pdf", fg = "${red}" },
+  { mime = "application/zip", fg = "${magenta}" },
+  { mime = "application/x-tar", fg = "${magenta}" },
+  { mime = "application/x-bzip*", fg = "${magenta}" },
+  { mime = "application/x-7z-compressed", fg = "${magenta}" },
+  { mime = "application/x-rar", fg = "${magenta}" },
+  { url = "*/", fg = "${fg}" },
+  { url = "*", is = "exec", fg = "${green}" }
+]
+
+[icon]
+dirs = [
+  { name = "Desktop", text = "󰟀", fg = "${fg}" },
+  { name = "Documents", text = "󱔗", fg = "${fg}" },
+  { name = "Downloads", text = "󰉍", fg = "${fg}" },
+  { name = "Dropbox", text = "󰇣", fg = "${fg}" },
+  { name = "Music", text = "󱍙", fg = "${fg}" },
+  { name = "Pictures", text = "󰉏", fg = "${fg}" },
+  { name = "Public", text = "󰉐", fg = "${fg}" },
+  { name = "Videos", text = "󰉑", fg = "${fg}" },
+]
+conds = [
+  { if = "dir", text = "", fg = "${fg}" },
+]
+TOML
+}
+
+CURRENT_TOML="/usr/share/omarchy/themes/$CURRENT_THEME/colors.toml"
+if [[ ! -f "$CURRENT_TOML" && -f "$HOME/.local/state/omarchy/current/theme/colors.toml" ]]; then
+    CURRENT_TOML="$HOME/.local/state/omarchy/current/theme/colors.toml"
+fi
+
+if [[ -f "$CURRENT_TOML" ]]; then
+    generate_yazi_theme "$CURRENT_TOML" "$THEME_FILE"
+fi

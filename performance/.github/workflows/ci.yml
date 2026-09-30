@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  syntax-integrity:
+    name: Syntax & Code Integrity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Validate Shell Syntax
+        run: |
+          for sh_file in scripts/*.sh scripts/modules/*.sh tests/*.sh; do
+            [ -f "$sh_file" ] || continue
+            bash -n "$sh_file"
+          done
+
+      - name: Run Syntax & Integrity Test Suite
+        run: bash tests/test_syntax_integrity.sh
+
+  shellcheck-analysis:
+    name: ShellCheck Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      - name: Run ShellCheck
+        run: |
+          shellcheck -e SC1091 -e SC2034 -e SC2016 scripts/*.sh scripts/modules/*.sh tests/*.sh
+
+  idempotency-and-safety:
+    name: Automation Safety & Idempotency Rules
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run Idempotency & Safety Check
+        run: bash tests/test_idempotency_safety.sh
+
+  modular-pipeline-integrity:
+    name: Modular Pipeline & Power Policy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run Modular Architecture Tests
+        run: bash tests/test_modular_pipeline.sh
+
+      - name: Run Power Policy Tests
+        run: bash tests/test_power_policy.sh
+
+      - name: Run Performance Tuning Tests
+        run: bash tests/test_performance_tuning.sh
+
+  arch-container-validation:
+    name: Arch Linux Container Full Run
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Setup Arch Environment
+        run: |
+          pacman -Syu --noconfirm base-devel git sudo jq
+          useradd -m -G wheel testuser
+          echo "testuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run Full Test Suite
+        run: bash tests/run-all.sh
+
+  ci-status-gate:
+    name: CI Completion Status Gate
+    needs:
+      - syntax-integrity
+      - shellcheck-analysis
+      - idempotency-and-safety
+      - modular-pipeline-integrity
+      - arch-container-validation
+    steps:
+      - name: CI Success Assertion
+        run: echo "All performance CI jobs and test suites completed successfully."

@@ -1,0 +1,101 @@
+[mgr]
+cwd = { fg = "#81a1c1", bold = true }
+find_keyword = { fg = "#ebcb8b", bold = true }
+find_position = { fg = "#d5967a", bold = true }
+marker_copied = { fg = "#a3be8c", bg = "#a3be8c" }
+marker_cut = { fg = "#bf616a", bg = "#bf616a" }
+marker_marked = { fg = "#81a1c1", bg = "#81a1c1" }
+marker_selected = { fg = "#ebcb8b", bg = "#ebcb8b" }
+border_symbol = "│"
+border_style = { fg = "#4c566a" }
+
+[indicator]
+preview = { bg = "#434c5e" }
+current = { fg = "#d8dee9", bg = "#434c5e", bold = true }
+
+[tabs]
+active = { fg = "#2e3440", bg = "#81a1c1", bold = true }
+inactive = { fg = "#4c566a", bg = "#222730" }
+
+[status]
+sep_left = { open = "", close = "" }
+sep_right = { open = "", close = "" }
+progress_label = { fg = "#d8dee9", bold = true }
+progress_normal = { fg = "#81a1c1", bg = "#3b4252" }
+progress_error = { fg = "#bf616a", bg = "#3b4252" }
+perm_type = { fg = "#81a1c1" }
+perm_read = { fg = "#ebcb8b" }
+perm_write = { fg = "#bf616a" }
+perm_exec = { fg = "#a3be8c" }
+perm_sep = { fg = "#4c566a" }
+
+[mode]
+normal_main = { fg = "#2e3440", bg = "#81a1c1", bold = true }
+normal_alt = { fg = "#2e3440", bg = "#81a1c1", bold = true }
+select_main = { fg = "#2e3440", bg = "#ebcb8b", bold = true }
+select_alt = { fg = "#2e3440", bg = "#ebcb8b", bold = true }
+unset_main = { fg = "#2e3440", bg = "#bf616a", bold = true }
+unset_alt = { fg = "#2e3440", bg = "#bf616a", bold = true }
+
+[pick]
+border = { fg = "#81a1c1" }
+active = { fg = "#d8dee9", bg = "#434c5e" }
+inactive = { fg = "#d8dee9" }
+
+[input]
+border = { fg = "#81a1c1" }
+title = { fg = "#81a1c1" }
+value = { fg = "#d8dee9" }
+selected = { bg = "#434c5e" }
+
+[cmp]
+border = { fg = "#81a1c1" }
+active = { fg = "#d8dee9", bg = "#434c5e" }
+inactive = { fg = "#d8dee9" }
+
+[tasks]
+border = { fg = "#81a1c1" }
+title = { fg = "#81a1c1" }
+hovered = { bg = "#434c5e" }
+
+[which]
+mask = { bg = "#434c5e" }
+cand = { fg = "#88c0d0" }
+rest = { fg = "#4c566a" }
+desc = { fg = "#b48ead" }
+separator = "  "
+separator_style = { fg = "#4c566a" }
+
+[help]
+chord = { fg = "#81a1c1" }
+action = { fg = "#d8dee9" }
+hovered = { bg = "#434c5e" }
+
+[filetype]
+rules = [
+  { mime = "image/*", fg = "#88c0d0" },
+  { mime = "video/*", fg = "#ebcb8b" },
+  { mime = "audio/*", fg = "#d5967a" },
+  { mime = "application/pdf", fg = "#bf616a" },
+  { mime = "application/zip", fg = "#b48ead" },
+  { mime = "application/x-tar", fg = "#b48ead" },
+  { mime = "application/x-bzip*", fg = "#b48ead" },
+  { mime = "application/x-7z-compressed", fg = "#b48ead" },
+  { url = "*/", fg = "#d8dee9" },
+  { url = "*", is = "exec", fg = "#a3be8c" }
+]
+
+[icon]
+dirs = [
+  { name = "Desktop", text = "󰟀", fg = "#d8dee9" },
+  { name = "Documents", text = "󱔗", fg = "#d8dee9" },
+  { name = "Downloads", text = "󰉍", fg = "#d8dee9" },
+  { name = "Dropbox", text = "󰇣", fg = "#d8dee9" },
+  { name = "Music", text = "󱍙", fg = "#d8dee9" },
+  { name = "Pictures", text = "󰉏", fg = "#d8dee9" },
+  { name = "Public", text = "󰉐", fg = "#d8dee9" },
+  { name = "Videos", text = "󰉑", fg = "#d8dee9" },
+]
+conds = [
+  { if = "dir", text = "", fg = "#d8dee9" },
+]

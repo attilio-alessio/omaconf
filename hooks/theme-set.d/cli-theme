@@ -1,0 +1,99 @@
+#!/bin/bash
+set -euo pipefail
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+OMABLOT_I18N_BOOT="${OMABLOT_I18N_BOOT:-$SCRIPT_DIR/../i18n/i18n-boot.sh}"
+[[ -f "$OMABLOT_I18N_BOOT" ]] || OMABLOT_I18N_BOOT="$SCRIPT_DIR/../../scripts/lib/i18n-boot.sh"
+if [[ -f "$OMABLOT_I18N_BOOT" ]]; then
+    . "$OMABLOT_I18N_BOOT"
+else
+    warn() { printf '%s: %s\n' "Warning" "$1" >&2; }
+fi
+
+if [[ -f "$HOME/.local/state/omarchy/current/theme.name" ]]; then
+    CURRENT_THEME=$(tr '[:upper:]' '[:lower:]' < "$HOME/.local/state/omarchy/current/theme.name" | tr ' ' '-')
+else
+    CURRENT_THEME="default"
+fi
+[[ -n "$CURRENT_THEME" ]] || CURRENT_THEME="default"
+
+OMABLOT_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/omablot"
+LAZYGIT_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/lazygit"
+
+mkdir -p "$OMABLOT_CONFIG" "$LAZYGIT_CONFIG"
+
+get_color() {
+    local key="$1" default="$2" toml="$3"
+    local val
+    val=$(grep -E "^[[:space:]]*${key}[[:space:]]*=" "$toml" 2>/dev/null | head -1 | sed -E 's/.*=[[:space:]]*"([^"]+)".*/\1/' || :)
+    if [[ -n "$val" ]]; then
+        printf '%s\n' "$val"
+    else
+        printf '%s\n' "$default"
+    fi
+}
+
+generate_cli_theme() {
+    local toml="$1"
+
+    local bg fg dark_bg light_bg selection muted accent red green yellow blue magenta cyan orange bright_fg
+
+    bg=$(get_color "background" "#1e1e2e" "$toml")
+    fg=$(get_color "foreground" "#cdd6f4" "$toml")
+    dark_bg=$(get_color "dark_background" "#161622" "$toml")
+    light_bg=$(get_color "lighter_background" "#313244" "$toml")
+    selection=$(get_color "selection" "#45475a" "$toml")
+    muted=$(get_color "muted" "#585b70" "$toml")
+    accent=$(get_color "accent" "#89b4fa" "$toml")
+    red=$(get_color "red" "#f38ba8" "$toml")
+    green=$(get_color "green" "#a6e3a1" "$toml")
+    yellow=$(get_color "yellow" "#f9e2af" "$toml")
+    blue=$(get_color "blue" "#89b4fa" "$toml")
+    magenta=$(get_color "magenta" "#f5c2e7" "$toml")
+    cyan=$(get_color "cyan" "#94e2d5" "$toml")
+    orange=$(get_color "orange" "#fab387" "$toml")
+    bright_fg=$(get_color "bright_foreground" "$fg" "$toml")
+
+    # 1. FZF environment settings
+    cat > "$OMABLOT_CONFIG/cli-theme.sh" << ENVS
+# Dynamic Omablot CLI Theme Environment
+export FZF_DEFAULT_OPTS="--color=bg+:${selection},bg:${bg},spinner:${accent},hl:${red},fg:${fg},header:${accent},info:${yellow},pointer:${accent},marker:${green},fg+:${bright_fg},prompt:${accent},hl+:${red} --layout=reverse --border"
+ENVS
+
+    # 2. Lazygit theme configuration
+    cat > "$LAZYGIT_CONFIG/config.yml" << YML
+gui:
+  theme:
+    activeBorderColor:
+      - "${accent}"
+      - bold
+    inactiveBorderColor:
+      - "${muted}"
+    searchingActiveBorderColor:
+      - "${yellow}"
+      - bold
+    optionsTextColor:
+      - "${accent}"
+    selectedLineBgColor:
+      - "${selection}"
+    selectedRangeBgColor:
+      - "${selection}"
+    cherryPickedCommitBgColor:
+      - "${cyan}"
+    cherryPickedCommitFgColor:
+      - "${accent}"
+    unstagedChangesColor:
+      - "${red}"
+    defaultFgColor:
+      - "${fg}"
+YML
+}
+
+CURRENT_TOML="/usr/share/omarchy/themes/$CURRENT_THEME/colors.toml"
+if [[ ! -f "$CURRENT_TOML" && -f "$HOME/.local/state/omarchy/current/theme/colors.toml" ]]; then
+    CURRENT_TOML="$HOME/.local/state/omarchy/current/theme/colors.toml"
+fi
+
+if [[ -f "$CURRENT_TOML" ]]; then
+    generate_cli_theme "$CURRENT_TOML"
+fi

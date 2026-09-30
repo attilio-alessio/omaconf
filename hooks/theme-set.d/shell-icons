@@ -1,0 +1,36 @@
+#!/bin/bash
+set -euo pipefail
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+OMABLOT_I18N_BOOT="${OMABLOT_I18N_BOOT:-$SCRIPT_DIR/../i18n/i18n-boot.sh}"
+[[ -f "$OMABLOT_I18N_BOOT" ]] || OMABLOT_I18N_BOOT="$SCRIPT_DIR/../../scripts/lib/i18n-boot.sh"
+if [[ -f "$OMABLOT_I18N_BOOT" ]]; then
+    . "$OMABLOT_I18N_BOOT"
+else
+    warn() { printf '%s: %s\n' "Warning" "$1" >&2; }
+fi
+
+if [[ -f "$HOME/.local/state/omarchy/current/theme.name" ]]; then
+    CURRENT_THEME=$(tr '[:upper:]' '[:lower:]' < "$HOME/.local/state/omarchy/current/theme.name" | tr ' ' '-')
+else
+    CURRENT_THEME=""
+fi
+[[ -n "$CURRENT_THEME" ]] || exit 0
+
+case "$CURRENT_THEME" in
+    white|flexoki-light|catppuccin-latte|solarized-light) THEMING_MODE="light" ;;
+    *)                                                     THEMING_MODE="dark" ;;
+esac
+
+if [[ "$THEMING_MODE" == "dark" ]] && [[ -d "/usr/share/icons/Papirus-Dark" ]]; then
+    ICON_THEME="Papirus-Dark"
+elif [[ -d "/usr/share/icons/Papirus" ]]; then
+    ICON_THEME="Papirus"
+else
+    ICON_THEME="hicolor"
+fi
+
+USER_THEME="$HOME/.config/omarchy/themes/$CURRENT_THEME"
+mkdir -p "$USER_THEME"
+printf '%s\n' "$ICON_THEME" > "$USER_THEME/icons.theme" || warn "hooks.icons_overlay_failed"
+printf '%s\n' "$ICON_THEME" > "$HOME/.local/state/omarchy/current/theme/icons.theme" || warn "hooks.icons_apply_failed"

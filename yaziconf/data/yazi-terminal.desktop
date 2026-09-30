@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Yazi File Manager (Terminal)
+Comment=Open folders in yazi inside the default terminal
+Exec=xdg-terminal-exec yazi %F
+Terminal=false
+Type=Application
+Icon=yazi
+MimeType=inode/directory;
+Categories=System;FileManager;FileTools;ConsoleOnly;
+Keywords=File;Manager;Explorer;Browser;Launcher;
+NoDisplay=true

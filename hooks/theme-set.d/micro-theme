@@ -1,0 +1,129 @@
+#!/bin/bash
+set -euo pipefail
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+OMABLOT_I18N_BOOT="${OMABLOT_I18N_BOOT:-$SCRIPT_DIR/../i18n/i18n-boot.sh}"
+[[ -f "$OMABLOT_I18N_BOOT" ]] || OMABLOT_I18N_BOOT="$SCRIPT_DIR/../../scripts/lib/i18n-boot.sh"
+if [[ -f "$OMABLOT_I18N_BOOT" ]]; then
+    . "$OMABLOT_I18N_BOOT"
+else
+    warn() { printf '%s: %s\n' "Warning" "$1" >&2; }
+fi
+
+if [[ -f "$HOME/.local/state/omarchy/current/theme.name" ]]; then
+    CURRENT_THEME=$(tr '[:upper:]' '[:lower:]' < "$HOME/.local/state/omarchy/current/theme.name" | tr ' ' '-')
+else
+    CURRENT_THEME="default"
+fi
+[[ -n "$CURRENT_THEME" ]] || CURRENT_THEME="default"
+
+MICRO_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/micro"
+SCHEMES_DIR="$MICRO_CONFIG/colorschemes"
+SETTINGS_FILE="$MICRO_CONFIG/settings.json"
+
+mkdir -p "$SCHEMES_DIR"
+
+get_color() {
+    local key="$1" default="$2" toml="$3"
+    local val
+    val=$(grep -E "^[[:space:]]*${key}[[:space:]]*=" "$toml" 2>/dev/null | head -1 | sed -E 's/.*=[[:space:]]*"([^"]+)".*/\1/' || :)
+    if [[ -n "$val" ]]; then
+        echo "$val"
+    else
+        echo "$default"
+    fi
+}
+
+generate_colorscheme() {
+    local toml="$1"
+    local out="$2"
+
+    local bg fg dark_bg light_bg selection muted accent red green yellow blue magenta cyan orange
+
+    bg=$(get_color "background" "#1e1e2e" "$toml")
+    fg=$(get_color "foreground" "#cdd6f4" "$toml")
+    dark_bg=$(get_color "dark_background" "#161622" "$toml")
+    light_bg=$(get_color "lighter_background" "#313244" "$toml")
+    selection=$(get_color "selection" "#45475a" "$toml")
+    muted=$(get_color "muted" "#585b70" "$toml")
+    accent=$(get_color "accent" "#89b4fa" "$toml")
+    red=$(get_color "red" "#f38ba8" "$toml")
+    green=$(get_color "green" "#a6e3a1" "$toml")
+    yellow=$(get_color "yellow" "#f9e2af" "$toml")
+    blue=$(get_color "blue" "#89b4fa" "$toml")
+    magenta=$(get_color "magenta" "#f5c2e7" "$toml")
+    cyan=$(get_color "cyan" "#94e2d5" "$toml")
+    orange=$(get_color "orange" "#fab387" "$toml")
+
+    cat > "$out" << SCHEME
+color-link default "${fg},${bg}"
+color-link comment "${muted}"
+color-link identifier "${accent}"
+color-link constant "${yellow}"
+color-link constant.string "${green}"
+color-link constant.number "${orange}"
+color-link statement "${magenta}"
+color-link symbol "${cyan}"
+color-link preproc "${magenta}"
+color-link type "${yellow}"
+color-link special "${red}"
+color-link underlined "underline ${accent}"
+color-link error "bold ${red}"
+color-link todo "bold ${yellow}"
+color-link statusline "${fg},${light_bg}"
+color-link tabbar "${fg},${dark_bg}"
+color-link line-number "${muted},${bg}"
+color-link current-line-number "${accent},${bg}"
+color-link gutter-error "${red}"
+color-link gutter-warning "${yellow}"
+color-link cursor-line "${light_bg}"
+color-link color-column "${light_bg}"
+color-link selection "${fg},${selection}"
+color-link diff-added "${green}"
+color-link diff-modified "${yellow}"
+color-link diff-deleted "${red}"
+color-link scrollbar "${muted},${dark_bg}"
+color-link divider "${muted},${dark_bg}"
+SCHEME
+}
+
+THEME_DIR="/usr/share/omarchy/themes"
+
+if [[ -d "$THEME_DIR" ]]; then
+    for t_dir in "$THEME_DIR"/*/; do
+        [[ -d "$t_dir" ]] || continue
+        t_slug=$(basename "$t_dir")
+        t_toml="$t_dir/colors.toml"
+        if [[ -f "$t_toml" ]]; then
+            generate_colorscheme "$t_toml" "$SCHEMES_DIR/omarchy-${t_slug}.micro"
+        fi
+    done
+fi
+
+CURRENT_TOML="/usr/share/omarchy/themes/$CURRENT_THEME/colors.toml"
+if [[ -f "$CURRENT_TOML" ]]; then
+    generate_colorscheme "$CURRENT_TOML" "$SCHEMES_DIR/omarchy.micro"
+elif [[ -f "$SCHEMES_DIR/omarchy-default.micro" ]]; then
+    cp "$SCHEMES_DIR/omarchy-default.micro" "$SCHEMES_DIR/omarchy.micro"
+fi
+
+if [[ -f "$SETTINGS_FILE" ]] && [[ -s "$SETTINGS_FILE" ]]; then
+    if command -v jq &>/dev/null; then
+        tmp_json=$(mktemp)
+        if jq '.colorscheme = "omarchy"' "$SETTINGS_FILE" > "$tmp_json" 2>/dev/null; then
+            mv "$tmp_json" "$SETTINGS_FILE"
+        else
+            rm -f "$tmp_json"
+        fi
+    elif grep -q '"colorscheme"' "$SETTINGS_FILE" 2>/dev/null; then
+        sed -i 's/"colorscheme"[[:space:]]*:[[:space:]]*"[^"]*"/"colorscheme": "omarchy"/' "$SETTINGS_FILE"
+    else
+        sed -i '0,/{/s/{/{\n    "colorscheme": "omarchy",/' "$SETTINGS_FILE"
+    fi
+else
+    cat > "$SETTINGS_FILE" << 'JSON'
+{
+    "colorscheme": "omarchy"
+}
+JSON
+fi

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "krosci.omamp",
+  "name": "MediaPlayer",
+  "version": "1.3.0",
+  "author": "krosci",
+  "license": "MIT",
+  "description": "Active media player in the bar with play/pause icon, and a panel with album art, title, track progress time, and playback controls",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "src/BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "MediaPlayer",
+    "description": "Media player in the bar; click for player panel with time and controls",
+    "category": "Media",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}

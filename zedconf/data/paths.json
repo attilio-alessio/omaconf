@@ -1,0 +1,21 @@
+{
+  "linux": {
+    "snap_path": "~/snap/zed/current/.config/zed",
+    "config_path": "~/.config/zed",
+    "extensions_paths": [
+      "~/.zedev/extensions"
+    ]
+  },
+  "macos": {
+    "config_path": "~/Library/Application Support/Zed",
+    "extensions_paths": [
+      "~/.zedev/extensions"
+    ]
+  },
+  "windows": {
+    "config_path": "%APPDATA%\\Zed",
+    "extensions_paths": [
+      "~\\.zedev\\extensions"
+    ]
+  }
+}

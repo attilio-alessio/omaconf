@@ -1,0 +1,6 @@
+{
+    "zed.runButtons": {
+        "Run": { "executor": "default", "icon": "play" },
+        "Run in Terminal": { "executor": "terminal", "icon": "terminal" }
+    }
+}

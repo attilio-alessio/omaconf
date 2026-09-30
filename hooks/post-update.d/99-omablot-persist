@@ -1,0 +1,123 @@
+#!/bin/bash
+set -euo pipefail
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+OMABLOT_I18N_BOOT="${OMABLOT_I18N_BOOT:-$SCRIPT_DIR/../i18n/i18n-boot.sh}"
+[[ -f "$OMABLOT_I18N_BOOT" ]] || OMABLOT_I18N_BOOT="$SCRIPT_DIR/../../scripts/lib/i18n-boot.sh"
+if [[ -f "$OMABLOT_I18N_BOOT" ]]; then
+    . "$OMABLOT_I18N_BOOT"
+else
+    warn() { printf '%s: %s\n' "Warning" "$1" >&2; }
+fi
+run_as_user() {
+  local _ru="$1"
+  shift
+  if [[ "$_ru" == "$(id -un 2>/dev/null)" ]]; then
+    "$@" 2>/dev/null || return 1
+  else
+    sudo -u "$_ru" "$@" 2>/dev/null || return 1
+  fi
+}
+PIN_FILES=("/etc/pacman.d/omablot/ignore-pkgs.list" "/etc/pacman.d/omasec/ignore-pkgs.list")
+PINS=""
+for PIN_FILE in "${PIN_FILES[@]}"; do
+  [[ -f "$PIN_FILE" ]] || continue
+  PINS="$PINS $(tr '\n' ' ' < "$PIN_FILE" | xargs)"
+done
+PINS=$(printf '%s\n' "$PINS" | xargs)
+if [[ -n "$PINS" ]]; then
+  EXISTING=""
+  if grep -q '^IgnorePkg' /etc/pacman.conf 2>/dev/null; then
+    EXISTING=$(grep '^IgnorePkg' /etc/pacman.conf | head -1 | sed 's/^IgnorePkg[[:space:]]*=[[:space:]]*//')
+  fi
+  MERGED="$EXISTING"
+  for pkg in $PINS; do
+    grep -qw "$pkg" <<< " $MERGED " 2>/dev/null || MERGED="$MERGED $pkg"
+  done
+  MERGED=$(printf '%s\n' "$MERGED" | xargs)
+  if [[ "$MERGED" != "$EXISTING" ]]; then
+    if grep -q '^IgnorePkg' /etc/pacman.conf 2>/dev/null; then
+      if [[ $EUID -eq 0 ]]; then
+        sed -i "s|^IgnorePkg.*|IgnorePkg = $MERGED|" /etc/pacman.conf 2>/dev/null || warn "hooks.ignore_merge_skipped"
+      elif sudo -n true 2>/dev/null; then
+        sudo -n sed -i "s|^IgnorePkg.*|IgnorePkg = $MERGED|" /etc/pacman.conf 2>/dev/null || warn "hooks.ignore_merge_skipped"
+      else
+        warn "hooks.ignore_merge_root_skipped"
+      fi
+    else
+      if [[ $EUID -eq 0 ]]; then
+        sed -i "/^\\[options\\]/a IgnorePkg = $MERGED" /etc/pacman.conf 2>/dev/null || warn "hooks.ignore_insert_skipped"
+      elif sudo -n true 2>/dev/null; then
+        sudo -n sed -i "/^\\[options\\]/a IgnorePkg = $MERGED" /etc/pacman.conf 2>/dev/null || warn "hooks.ignore_insert_skipped"
+      else
+        warn "hooks.ignore_insert_root_skipped"
+      fi
+    fi
+  fi
+  read -ra PINNED <<< "$PINS"
+  INSTALLED=()
+  for pkg in "${PINNED[@]}"; do
+    if pacman -Qq "$pkg" 2>/dev/null | grep -qx "$pkg"; then
+      INSTALLED+=("$pkg")
+    fi
+  done
+  if [[ ${#INSTALLED[@]} -gt 0 ]]; then
+    if [[ $EUID -eq 0 ]]; then
+      pacman -Rns --noconfirm "${INSTALLED[@]}" 2>/dev/null || warn "hooks.debloat_reapply_skipped"
+    elif sudo -n true 2>/dev/null; then
+      sudo -n pacman -Rns --noconfirm "${INSTALLED[@]}" 2>/dev/null || warn "hooks.debloat_reapply_skipped"
+    else
+      warn "hooks.debloat_reapply_root_skipped"
+    fi
+  fi
+fi
+for user_home in /home/*; do
+  [[ -d "$user_home" ]] || continue
+  _user=$(basename "$user_home")
+  _uid=$(id -u "$_user" 2>/dev/null) || continue
+  if [[ -e "/run/user/$_uid/bus" ]]; then
+    _tname=""
+    if [[ -f "$user_home/.local/state/omarchy/current/theme.name" ]]; then
+      _tname=$(tr '[:upper:]' '[:lower:]' < "$user_home/.local/state/omarchy/current/theme.name" | tr ' ' '-')
+    fi
+    case "$_tname" in
+      white|flexoki-light|catppuccin-latte|solarized-light) _it="Papirus" ;;
+      *) _it="Papirus-Dark" ;;
+    esac
+    run_as_user "$_user" env XDG_RUNTIME_DIR="/run/user/$_uid" gsettings set org.gnome.desktop.interface icon-theme "$_it" 2>/dev/null || warn "hooks.icons_reapply_skipped" "$_user"
+    run_as_user "$_user" env XDG_RUNTIME_DIR="/run/user/$_uid" gsettings set org.gnome.desktop.interface cursor-theme "capitaine-cursors" 2>/dev/null || warn "hooks.cursor_reapply_skipped" "$_user"
+  fi
+  run_as_user "$_user" xdg-mime default yazi-terminal.desktop inode/directory 2>/dev/null || warn "hooks.yazi_reapply_skipped" "$_user"
+  run_as_user "$_user" xdg-mime default org.pwmt.zathura.desktop application/pdf 2>/dev/null || warn "hooks.pdf_reapply_skipped" "$_user"
+  run_as_user "$_user" xdg-mime default imv.desktop image/png image/jpeg image/gif image/webp 2>/dev/null || warn "hooks.image_reapply_skipped" "$_user"
+  run_as_user "$_user" xdg-mime default mpv.desktop video/mp4 video/x-matroska video/webm audio/mpeg 2>/dev/null || warn "hooks.media_reapply_skipped" "$_user"
+  if [[ -n "$_uid" && -d "/run/user/$_uid" ]]; then
+    _user_env=(env "XDG_RUNTIME_DIR=/run/user/$_uid" "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$_uid/bus")
+    run_as_user "$_user" "${_user_env[@]}" systemctl --user disable --now omarchy-crash-watch.service 2>/dev/null || warn "hooks.crashwatch_disable_skipped" "$_user"
+    run_as_user "$_user" "${_user_env[@]}" systemctl --user mask omarchy-crash-watch.service 2>/dev/null || warn "hooks.crashwatch_mask_skipped" "$_user"
+  fi
+  _portal_dir="$user_home/.config/xdg-desktop-portal"
+  _tf_dir="$user_home/.config/xdg-desktop-portal-termfilechooser"
+  mkdir -p "$_portal_dir" "$_tf_dir" 2>/dev/null || warn "hooks.portal_dirs_skipped" "$_user"
+  if [[ ! -f "$_tf_dir/config" ]]; then
+    cat > "$_tf_dir/config" << 'TFEOF' 2>/dev/null || warn "hooks.portal_config_reapply_skipped" "$_user"
+[filechooser]
+cmd=yazi-wrapper.sh
+default_dir=$HOME
+env=TERMCMD='kitty --title "terminal filechooser"'
+open_mode=suggested
+save_mode=last
+TFEOF
+  fi
+  sed -i "s|TERMCMD='foot |TERMCMD='kitty |" "$_tf_dir/config"
+  omarchy default terminal kitty 2>/dev/null || warn "hooks.terminal_reapply_skipped" "$_user"
+  for _pc in portals.conf hyprland-portals.conf; do
+    _pf="$_portal_dir/$_pc"
+    if grep -q '^org\.freedesktop\.impl\.portal\.FileChooser=' "$_pf" 2>/dev/null; then
+      sed -i 's|^org\.freedesktop\.impl\.portal\.FileChooser=.*|org.freedesktop.impl.portal.FileChooser=termfilechooser|' "$_pf" 2>/dev/null || warn "hooks.portal_conf_reapply_skipped" "$_user"
+    else
+      grep -q '^\[preferred\]' "$_pf" 2>/dev/null || printf '[preferred]\n' >> "$_pf" 2>/dev/null || warn "hooks.portal_header_skipped" "$_user"
+      printf 'org.freedesktop.impl.portal.FileChooser=termfilechooser\n' >> "$_pf" 2>/dev/null || warn "hooks.portal_conf_reapply_skipped" "$_user"
+    fi
+  done
+  chown -R "$_user":"$_user" "$_portal_dir" "$_tf_dir" 2>/dev/null || warn "hooks.portal_chown_failed" "$_user"
+done

@@ -1,0 +1,17 @@
+{
+  "name": "omamp",
+  "version": "1.3.0",
+  "description": "Media player plugin for the Omarchy desktop shell",
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "omarchy",
+    "quickshell",
+    "mpris",
+    "media-player"
+  ],
+  "author": "krosci",
+  "license": "MIT"
+}

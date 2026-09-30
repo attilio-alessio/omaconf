@@ -1,0 +1,12 @@
+{
+    "terminal.integrated.profiles.linux": {
+        "bash": { "path": "bash", "icon": "terminal-bash" },
+        "zsh": { "path": "zsh", "icon": "terminal-bash" },
+        "fish": { "path": "fish", "icon": "terminal-bash" },
+        "toolbox": {
+            "path": "toolbox",
+            "args": ["run", "--container", "development"],
+            "icon": "terminal-linux"
+        }
+    }
+}

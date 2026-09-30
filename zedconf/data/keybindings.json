@@ -1,0 +1,25 @@
+[
+    {
+        "bindings": {
+            "ctrl-shift-p": "command_palette::Toggle"
+        }
+    },
+    {
+        "context": "Editor",
+        "bindings": {
+            "ctrl-shift-m": "markdown::OpenPreview"
+        }
+    },
+    {
+        "context": "Workspace",
+        "bindings": {
+            "ctrl-b": "workspace::ToggleLeftDock"
+        }
+    },
+    {
+        "context": "ProjectPanel",
+        "bindings": {
+            "ctrl-shift-e": "project_panel::ToggleFocus"
+        }
+    }
+]
