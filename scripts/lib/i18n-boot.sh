@@ -24,10 +24,19 @@ _omaconf_i18n_resolve() {
 
 if _omaconf_i18n_path=$(_omaconf_i18n_resolve) && [[ -f "$_omaconf_i18n_path" ]]; then
     # shellcheck disable=SC1090
-    source "$_omaconf_i18n_path" || true
+    if source "$_omaconf_i18n_path"; then
+        _omaconf_i18n_loaded=1
+    else
+        _omaconf_i18n_stub
+        warn "Unable to load the internationalization library; using the English fallback."
+        _omaconf_i18n_loaded=0
+    fi
     unset _omaconf_i18n_path
-    if declare -F t >/dev/null 2>&1; then
-        i18n_init || _omaconf_i18n_stub
+    if [[ "$_omaconf_i18n_loaded" == 1 ]] && declare -F t >/dev/null 2>&1; then
+        if ! i18n_init; then
+            _omaconf_i18n_stub
+            warn "Unable to initialize internationalization; using the English fallback."
+        fi
     else
         _omaconf_i18n_stub
     fi
