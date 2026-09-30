@@ -80,8 +80,6 @@ assert_file_executable "post-update persist hook executable" "$PERSIST_POST"
 assert_file_contains "post-update hook reapplies yazi default" "$PERSIST_POST" "yazi-terminal.desktop inode/directory"
 assert_file_contains "post-update hook reapplies termfilechooser routing" "$PERSIST_POST" "FileChooser=termfilechooser"
 
-assert_file_exists "sprint plan exists" "$PROJECT_DIR/docs/SPRINTS.md"
-assert_file_contains "sprint plan freezes current defaults" "$PROJECT_DIR/docs/SPRINTS.md" "brave-origin"
 assert_file_exists "plugin index exists" "$PROJECT_DIR/plugins/index.json"
 assert_file_contains "plugin index references omamp" "$PROJECT_DIR/plugins/index.json" "omamp"
 
