@@ -89,6 +89,11 @@ theming.cursor_skipped=gsettings cursor-theme ignorado para %s
 theming.gtk_chown=falha do chown da configuração do GTK para %s
 theming.icons_chown=falha do chown dos ícones para %s
 theming.hypr_chown=falha do chown do hyprland.lua para %s
+theming.preview_size=Normalização do tamanho das pré-visualizações de tema originais
+theming.preview_backup_failed=Falha no backup da pré-visualização do tema para %s
+theming.preview_overlay_restored=Pré-visualização do tema restaurada para %s
+theming.preview_resize_failed=Falha ao redimensionar a pré-visualização do tema para %s
+theming.preview_size_skipped=Normalização do tamanho das pré-visualizações de tema omitida
 theming.hooks=Instalação dos hooks de tema (cor das pastas e editor micro)
 theming.hook_failed=hook %s falhou para %s
 
@@ -265,6 +270,8 @@ hooks.portal_dirs_skipped=criação dos diretórios de configuração do portal 
 hooks.portal_config_reapply_skipped=reaplicação da configuração do termfilechooser ignorada para %s
 hooks.portal_conf_reapply_skipped=reaplicação de FileChooser no portals.conf ignorada para %s
 hooks.portal_header_skipped=cabeçalho de portals.conf ignorado para %s
+hooks.preview_size_reapply_skipped=Reaplicação do tamanho das pré-visualizações de tema omitida
+hooks.preview_size_reapply_root_skipped=Reaplicação do tamanho das pré-visualizações de tema omitida (requer root)
 hooks.portal_chown_failed=falha do chown das configurações do portal para %s
 
 install.theme_sync_skipped=sincronização do tema ignorada
