@@ -112,8 +112,15 @@ if pacman -Q apparmor &>/dev/null; then
     fi
 
     cat > /etc/apparmor.d/usr.bin.sshd << 'SSHD'
+#include <tunables/global>
 
 /usr/bin/sshd {
+
+  #include <abstractions/base>
+  #include <abstractions/authentication>
+  #include <abstractions/nameservice>
+  #include <abstractions/openssl>
+  #include <abstractions/ssl_certs>
 
   capability dac_override,
   capability dac_read_search,
@@ -123,7 +130,13 @@ if pacman -Q apparmor &>/dev/null; then
 
   /etc/ssh/** r,
   /etc/ssh/sshd_config.d/** r,
+  /etc/nsswitch.conf r,
+  /etc/passwd r,
+  /etc/group r,
+  /etc/shadow r,
+  /etc/gshadow r,
   /var/log/* w,
+  /var/empty/** rw,
   /var/run/sshd/ rw,
   /run/sshd/ rw,
   /proc/sys/net/ipv4/tcp_max_syn_backlog r,
@@ -134,29 +147,42 @@ if pacman -Q apparmor &>/dev/null; then
 
   deny /home/** w,
   deny /root/** w,
-  deny /tmp/** rw,
   deny /var/tmp/** rw,
 }
 SSHD
 
     cat > /etc/apparmor.d/usr.bin.useradd << 'USERADD'
+#include <tunables/global>
 
 /usr/bin/useradd {
+
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
 
   /etc/passwd rw,
   /etc/shadow rw,
   /etc/group rw,
   /etc/gshadow rw,
   /etc/login.defs r,
+  /etc/default/** r,
   /etc/skel/** r,
   /home/** rw,
   /var/spool/mail/** rw,
+
+  deny /etc/sudoers r,
+  deny /etc/ssh/** r,
 }
 USERADD
 
     cat > /etc/apparmor.d/usr.bin.curl << 'CURL'
+#include <tunables/global>
 
 /usr/bin/curl {
+
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+  #include <abstractions/openssl>
+  #include <abstractions/ssl_certs>
 
   network inet stream,
   network inet6 stream,
@@ -178,8 +204,14 @@ USERADD
 CURL
 
     cat > /etc/apparmor.d/usr.bin.wget << 'WGET'
+#include <tunables/global>
 
 /usr/bin/wget {
+
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+  #include <abstractions/openssl>
+  #include <abstractions/ssl_certs>
 
   network inet stream,
   network inet6 stream,
@@ -198,6 +230,12 @@ CURL
   deny /etc/ssh/sshd_config r,
 }
 WGET
+
+    chmod 644 \
+        /etc/apparmor.d/usr.bin.sshd \
+        /etc/apparmor.d/usr.bin.useradd \
+        /etc/apparmor.d/usr.bin.curl \
+        /etc/apparmor.d/usr.bin.wget
 
     systemctl enable apparmor.service || warn "security.apparmor_failed"
     aa-enforce /usr/bin/sshd 2>/dev/null || warn "security.aa_sshd"
