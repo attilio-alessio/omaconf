@@ -10,6 +10,8 @@ HELPER_FILES="omaconf-helpers.lua omaconf-completion.lua"
 I18N_LIB="$(dirname "$SCRIPT_DIR")/scripts/lib"
 # shellcheck source=/dev/null
 source "$I18N_LIB/i18n.sh"
+# shellcheck source=/dev/null
+source "$I18N_LIB/userconf.sh"
 
 i18n_init
 
@@ -22,13 +24,8 @@ if [[ ! -d "$CONFIG_DIR" ]]; then
     fi
 fi
 
-mkdir -p "$PLUGINS_DIR"
-
 for HELPER_FILE in $HELPER_FILES; do
-    if [[ -f "$PLUGINS_DIR/$HELPER_FILE" ]]; then
-        cp "$PLUGINS_DIR/$HELPER_FILE" "$PLUGINS_DIR/$HELPER_FILE.bak-$(date +%s)"
-    fi
-    cp "$SCRIPT_DIR/data/$HELPER_FILE" "$PLUGINS_DIR/$HELPER_FILE"
+    install_user_file "$SCRIPT_DIR/data/$HELPER_FILE" "$PLUGINS_DIR/$HELPER_FILE" 600
 done
 
 log "install.nvim_done"
