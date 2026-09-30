@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
@@ -54,6 +56,7 @@ for mod in "${MODULE_FILES[@]}"; do
     [[ -f "$mod" ]] || continue
     mod_name=$(basename "$mod")
     log "__stage" "$mod_name"
+    # shellcheck disable=SC1090
     source "$mod"
 done
 

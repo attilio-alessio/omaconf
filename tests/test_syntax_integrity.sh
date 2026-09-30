@@ -36,8 +36,8 @@ done
 
 assert_file_executable "scripts/lib/i18n.sh is executable" "$PROJECT_DIR/scripts/lib/i18n.sh"
 assert_file_executable "scripts/lib/help.sh is executable" "$PROJECT_DIR/scripts/lib/help.sh"
-assert_true "i18n.sh does not alter caller shell options" "bash -c 'set +e +u; source "$PROJECT_DIR/scripts/lib/i18n.sh"; [[ \$- != *e* && \$- != *u* ]]'"
-assert_true "locale-map.sh does not alter caller shell options" "bash -c 'set +e +u; source "$PROJECT_DIR/scripts/lib/locale-map.sh"; [[ \$- != *e* && \$- != *u* ]]'"
+assert_true "i18n.sh does not alter caller shell options" "bash -c 'set +e +u; source \"$PROJECT_DIR/scripts/lib/i18n.sh\"; [[ \$- != *e* && \$- != *u* ]]'"
+assert_true "locale-map.sh does not alter caller shell options" "bash -c 'set +e +u; source \"$PROJECT_DIR/scripts/lib/locale-map.sh\"; [[ \$- != *e* && \$- != *u* ]]'"
 assert_file_contains "help.sh uses strict mode" "$PROJECT_DIR/scripts/lib/help.sh" "set -euo pipefail"
 assert_file_contains "setup.sh uses strict mode" "$PROJECT_DIR/scripts/setup.sh" "set -euo pipefail"
 assert_file_contains "verify.sh uses strict mode" "$PROJECT_DIR/scripts/verify.sh" "set -uo pipefail"

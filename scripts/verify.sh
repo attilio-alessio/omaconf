@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 
 set -uo pipefail
 
@@ -213,8 +215,8 @@ VERIFY_LANG=$(sed -n 's/^LANG=//p' /etc/locale.conf 2>/dev/null | head -1)
 
 locale_generated() {
     local want have
-    want=$(printf '%s' "$VERIFY_LANG" | tr 'A-Z' 'a-z' | tr -d '-')
-    have=$(locale -a 2>/dev/null | tr 'A-Z' 'a-z' | tr -d '-')
+    want=$(printf '%s' "$VERIFY_LANG" | tr '[:upper:]' '[:lower:]' | tr -d '-')
+    have=$(locale -a 2>/dev/null | tr '[:upper:]' '[:lower:]' | tr -d '-')
     [[ -n "$want" ]] && grep -qxF "$want" <<< "$have"
 }
 tcheck "verify.locale_conf"  "[[ -f /etc/locale.conf ]]"

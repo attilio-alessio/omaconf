@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 set -euo pipefail
 
 NVIM_KEEP=(neovim omarchy-nvim)

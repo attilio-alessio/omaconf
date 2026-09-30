@@ -38,7 +38,7 @@ generate_colorscheme() {
     local toml="$1"
     local out="$2"
 
-    local bg fg dark_bg light_bg selection muted accent red green yellow blue magenta cyan orange
+    local bg fg dark_bg light_bg selection muted accent red green yellow magenta cyan orange
 
     bg=$(get_color "background" "#1e1e2e" "$toml")
     fg=$(get_color "foreground" "#cdd6f4" "$toml")
@@ -50,7 +50,6 @@ generate_colorscheme() {
     red=$(get_color "red" "#f38ba8" "$toml")
     green=$(get_color "green" "#a6e3a1" "$toml")
     yellow=$(get_color "yellow" "#f9e2af" "$toml")
-    blue=$(get_color "blue" "#89b4fa" "$toml")
     magenta=$(get_color "magenta" "#f5c2e7" "$toml")
     cyan=$(get_color "cyan" "#94e2d5" "$toml")
     orange=$(get_color "orange" "#fab387" "$toml")

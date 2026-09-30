@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 install_user_file() {
     local src="$1" dest="$2" mode="${3:-644}"
     [[ -f "$src" ]] || return 0

@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 set -euo pipefail
 
 OMAQT_URL="${OMAQT_URL:-}"

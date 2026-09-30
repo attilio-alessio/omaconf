@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 
 I18N_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 I18N_DIR="${OMACONF_I18N_DIR:-$I18N_LIB_DIR/messages}"
@@ -85,7 +87,8 @@ t() {
 
     [[ -n "$format" ]] || format="$msgid"
 
-    if (( $# > 0 )); then
+    if (($# > 0)); then
+        # shellcheck disable=SC2059
         printf -- "$format" "$@"
     else
         printf -- '%s' "$format"

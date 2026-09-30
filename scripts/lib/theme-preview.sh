@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 THEME_PREVIEW_CANVAS="${THEME_PREVIEW_CANVAS:-1800x1012}"
 THEME_PREVIEW_BACKUP_DIR="${THEME_PREVIEW_BACKUP_DIR:-/var/cache/omaconf/theme-preview-stock}"
 THEME_PREVIEW_OVERLAY_STORE="${THEME_PREVIEW_OVERLAY_STORE:-/var/lib/omaconf/theme-preview-overlay}"
