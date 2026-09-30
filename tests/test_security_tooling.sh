@@ -19,6 +19,12 @@ assert_file_contains "security module defines audit rules" "$SEC_MODULE" "/etc/a
 assert_file_contains "security module configures usbguard" "$SEC_MODULE" "usbguard generate-policy"
 assert_file_contains "security module configures fail2ban jail" "$SEC_MODULE" "/etc/fail2ban/jail.local"
 assert_file_contains "security module defines apparmor profiles" "$SEC_MODULE" "/etc/apparmor.d/usr.bin.sshd"
+assert_true "every apparmor profile includes abstractions/base for shared library loading" \
+    "[[ \$(grep -c '^[[:space:]]*#include <abstractions/base>' '$SEC_MODULE') -ge 4 ]]"
+assert_true "every apparmor profile includes tunables/global" \
+    "[[ \$(grep -c '^#include <tunables/global>' '$SEC_MODULE') -ge 4 ]]"
+assert_file_contains "apparmor profiles are written world readable" "$SEC_MODULE" "chmod 644"
+assert_file_not_contains "sshd apparmor profile no longer denies the privilege separation directory" "$SEC_MODULE" "deny /tmp/\*\* rw"
 
 assert_file_exists "hardware power module exists" "$POWER_MODULE"
 assert_file_contains "hardware module blacklists usb-storage" "$POWER_MODULE" "blacklist usb-storage"
