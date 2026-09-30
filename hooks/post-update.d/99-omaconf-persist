@@ -17,6 +17,18 @@ run_as_user() {
     sudo -u "$_ru" "$@" 2>/dev/null || return 1
   fi
 }
+OMACONF_THEME_PREVIEW="${OMACONF_THEME_PREVIEW:-$SCRIPT_DIR/../lib/theme-preview.sh}"
+[[ -f "$OMACONF_THEME_PREVIEW" ]] || OMACONF_THEME_PREVIEW="$SCRIPT_DIR/../../scripts/lib/theme-preview.sh"
+if [[ -f "$OMACONF_THEME_PREVIEW" ]]; then
+  source "$OMACONF_THEME_PREVIEW"
+fi
+if declare -F theme_preview_normalize >/dev/null; then
+  if [[ $EUID -eq 0 ]]; then
+    theme_preview_normalize || warn "hooks.preview_size_reapply_skipped"
+  else
+    warn "hooks.preview_size_reapply_root_skipped"
+  fi
+fi
 PIN_FILES=("/etc/pacman.d/omaconf/ignore-pkgs.list" "/etc/pacman.d/omasec/ignore-pkgs.list")
 PINS=""
 for PIN_FILE in "${PIN_FILES[@]}"; do
