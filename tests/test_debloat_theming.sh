@@ -59,14 +59,9 @@ assert_file_contains "post-update hook resolves the deployed preview library" "$
 assert_file_contains "post-update hook reapplies preview normalization" "$PROJECT_DIR/hooks/post-update.d/99-omaconf-persist" "theme_preview_normalize"
 
 REBUILD_GEOMETRY="$PROJECT_DIR/theme-previews/rebuild-previews.sh"
-assert_file_contains "rebuild script keeps a reference canvas" "$REBUILD_GEOMETRY" 'YAZI_TILE_CANVAS="1800x1012"'
-assert_file_contains "rebuild script keeps a reference tile offset" "$REBUILD_GEOMETRY" 'YAZI_TILE_OFFSET="906,520"'
-assert_file_contains "rebuild script keeps a reference tile size" "$REBUILD_GEOMETRY" 'YAZI_TILE_SIZE="878x480"'
-assert_file_contains "rebuild script scales the tile to the real canvas width" "$REBUILD_GEOMETRY" 'tile_x=\$\(\(ref_tile_x \* canvas_width / ref_canvas_width\)\)'
-assert_file_contains "rebuild script scales the tile to the real canvas height" "$REBUILD_GEOMETRY" 'tile_y=\$\(\(ref_tile_y \* canvas_height / ref_canvas_height\)\)'
-assert_file_contains "rebuild script scales the tile width to the canvas" "$REBUILD_GEOMETRY" 'tile_width=\$\(\(ref_tile_width \* canvas_width / ref_canvas_width\)\)'
-assert_file_contains "rebuild script scales the tile height to the canvas" "$REBUILD_GEOMETRY" 'tile_height=\$\(\(ref_tile_height \* canvas_height / ref_canvas_height\)\)'
-assert_true "rebuild script hardcodes no absolute tile pixel" "! grep -qE '^[[:space:]]*tile_(x|y|width|height)=[0-9]+$' '$REBUILD_GEOMETRY'"
+assert_file_contains "rebuild script captures Neovim" "$REBUILD_GEOMETRY" 'capture_app nvim'
+assert_file_contains "rebuild script captures btop" "$REBUILD_GEOMETRY" 'capture_app btop'
+assert_file_contains "rebuild script builds a paired preview canvas" "$REBUILD_GEOMETRY" 'CANVAS_WIDTH=1800'
 assert_file_contains "rebuild script writes the composite as rgba" "$REBUILD_GEOMETRY" 'PNG32:\$output_dir/preview.png'
 
 PREVIEW_APPLY="$PROJECT_DIR/theme-previews/apply.sh"
