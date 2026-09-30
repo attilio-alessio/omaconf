@@ -1,6 +1,6 @@
 
 detect_system_timezone() {
-    local tz="${OMABLOT_FORCE_TZ:-}"
+    local tz="${OMACONF_FORCE_TZ:-}"
 
     if [[ -z "$tz" ]] && command -v timedatectl &>/dev/null; then
         tz=$(timedatectl show -p Timezone --value 2>/dev/null || printf '')

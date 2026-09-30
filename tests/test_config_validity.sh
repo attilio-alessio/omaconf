@@ -39,8 +39,8 @@ else
 fi
 
 if command -v luac &>/dev/null; then
-    assert_true "nvim helpers lua syntax valid" "luac -p '$NVIM_DATA/omablot-helpers.lua'"
-    assert_true "nvim completion lua syntax valid" "luac -p '$NVIM_DATA/omablot-completion.lua'"
+    assert_true "nvim helpers lua syntax valid" "luac -p '$NVIM_DATA/omaconf-helpers.lua'"
+    assert_true "nvim completion lua syntax valid" "luac -p '$NVIM_DATA/omaconf-completion.lua'"
 fi
 
 assert_true "cliconf helpers bash syntax valid" "bash -n '$CLICONF_DATA/helpers.sh'"

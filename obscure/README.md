@@ -116,4 +116,4 @@ bash tests/test_auth_helpers.sh
 bash tests/test_idle.sh
 ```
 
-Operating rules in `AGENTS.md` and runbook in `.skills/privacy-shield`. Family contract in profile repo `omablot/.github` inside `docs`. Operating note holds that after yazi config reinstall from debloat repo this setup needs rerun.
+Operating rules in `AGENTS.md` and runbook in `.skills/privacy-shield`. Family contract in profile repo `omaconf/.github` inside `docs`. Operating note holds that after yazi config reinstall from debloat repo this setup needs rerun.

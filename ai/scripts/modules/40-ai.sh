@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Opt-in AI debloat. It runs only when sourced by scripts/debloat-ai.sh --yes,
-# which sets OMABLOT_AI_DEBLOAT=1. Requires log, warn and omarchy_as from the
+# which sets OMACONF_AI_DEBLOAT=1. Requires log, warn and omarchy_as from the
 # entry script. Default TUI of AI CLIs is never themed, no exceptions.
 #
 # Explicitly out of scope (never touched):
@@ -10,7 +10,7 @@ set -euo pipefail
 #   - tensaku (screenshot annotator, not AI)
 #   - editor and shell configurations
 
-if [[ "${OMABLOT_AI_DEBLOAT:-0}" != "1" ]]; then
+if [[ "${OMACONF_AI_DEBLOAT:-0}" != "1" ]]; then
     printf '%s\n' "AI debloat is opt-in: run scripts/debloat-ai.sh --yes to proceed"
     return 0 2>/dev/null || exit 0
 fi

@@ -145,10 +145,10 @@ for user_home in /home/*; do
     [[ -d "$user_home" ]] || continue
     _user=$(basename "$user_home")
     _bindings="$user_home/.config/hypr/bindings.lua"
-    if [[ -f "$_bindings" ]] && ! grep -q 'omablot-yazi-fm' "$_bindings" 2>/dev/null; then
+    if [[ -f "$_bindings" ]] && ! grep -q 'omaconf-yazi-fm' "$_bindings" 2>/dev/null; then
         cat >> "$_bindings" << 'LUAEOF'
 
--- omablot-yazi-fm: route Omarchy file manager keys to yazi instead of nautilus
+-- omaconf-yazi-fm: route Omarchy file manager keys to yazi instead of nautilus
 hl.unbind("SUPER + SHIFT + F")
 o.bind("SUPER + SHIFT + F", "File manager", "xdg-terminal-exec yazi")
 hl.unbind("SUPER + ALT + SHIFT + F")

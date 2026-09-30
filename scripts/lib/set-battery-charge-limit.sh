@@ -2,7 +2,7 @@
 set -euo pipefail
 
 limit=75
-config=/etc/omablot/power.conf
+config=/etc/omaconf/power.conf
 if [[ -r "$config" ]]; then
     configured_limit=$(sed -n 's/^BATTERY_CHARGE_LIMIT=\([0-9][0-9]*\)$/\1/p' "$config" | head -n 1)
     [[ "$configured_limit" =~ ^([5-9][0-9]|100)$ ]] && limit="$configured_limit"

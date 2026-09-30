@@ -44,7 +44,7 @@ PLAN
 
 [[ $EUID -eq 0 ]] || err "Root required (run via sudo or pkexec)"
 
-export OMABLOT_AI_DEBLOAT=1
+export OMACONF_AI_DEBLOAT=1
 
 # shellcheck source=/dev/null
 source "$MODULES_DIR/40-ai.sh"

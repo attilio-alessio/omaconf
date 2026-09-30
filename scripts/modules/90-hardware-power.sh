@@ -4,11 +4,11 @@ log "power.deep_sleep"
 if [[ -r /sys/power/mem_sleep ]] && grep -qw deep /sys/power/mem_sleep; then
     mkdir -p /etc/systemd/sleep.conf.d
     chmod 755 /etc/systemd/sleep.conf.d
-    cat > /etc/systemd/sleep.conf.d/99-omablot-deep-sleep.conf << 'SLEEP_MODE'
+    cat > /etc/systemd/sleep.conf.d/99-omaconf-deep-sleep.conf << 'SLEEP_MODE'
 [Sleep]
 MemorySleepMode=deep
 SLEEP_MODE
-    chmod 644 /etc/systemd/sleep.conf.d/99-omablot-deep-sleep.conf
+    chmod 644 /etc/systemd/sleep.conf.d/99-omaconf-deep-sleep.conf
 fi
 
 log "power.usb_storage"

@@ -3,9 +3,9 @@ set -euo pipefail
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
-SHARE_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/omablot"
-MARK_BEGIN="# >>> omablot helpers >>>"
-MARK_END="# <<< omablot helpers <<<"
+SHARE_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/omaconf"
+MARK_BEGIN="# >>> omaconf helpers >>>"
+MARK_END="# <<< omaconf helpers <<<"
 
 I18N_LIB="$(dirname "$SCRIPT_DIR")/scripts/lib"
 # shellcheck source=/dev/null
@@ -23,10 +23,10 @@ fi
 if [[ -f "$HOME/.bashrc" ]]; then
     sed -i "\|$MARK_BEGIN|,\|$MARK_END|d" "$HOME/.bashrc"
     cat >> "$HOME/.bashrc" << 'SHELLBLOCK'
-# >>> omablot helpers >>>
-[[ -r "$HOME/.local/share/omablot/helpers.sh" ]] && source "$HOME/.local/share/omablot/helpers.sh"
-[[ -r "$HOME/.config/omablot/cli-theme.sh" ]] && source "$HOME/.config/omablot/cli-theme.sh"
-# <<< omablot helpers <<<
+# >>> omaconf helpers >>>
+[[ -r "$HOME/.local/share/omaconf/helpers.sh" ]] && source "$HOME/.local/share/omaconf/helpers.sh"
+[[ -r "$HOME/.config/omaconf/cli-theme.sh" ]] && source "$HOME/.config/omaconf/cli-theme.sh"
+# <<< omaconf helpers <<<
 SHELLBLOCK
 fi
 

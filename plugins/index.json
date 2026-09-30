@@ -4,10 +4,10 @@
     {
       "id": "krosci.omamp",
       "name": "MediaPlayer",
-      "source": "https://github.com/omablot/omamp.git",
+      "source": "https://github.com/omaconf/omamp.git",
       "path": "plugins/omamp",
       "kind": "bar-widget",
-      "install": "omarchy plugin add https://github.com/omablot/omamp.git --enable --yes"
+      "install": "omarchy plugin add https://github.com/omaconf/omamp.git --enable --yes"
     }
   ]
 }

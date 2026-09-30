@@ -1,10 +1,10 @@
 
 I18N_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-I18N_DIR="${OMABLOT_I18N_DIR:-$I18N_LIB_DIR/messages}"
+I18N_DIR="${OMACONF_I18N_DIR:-$I18N_LIB_DIR/messages}"
 I18N_SUPPORTED=(en it fr de es pt)
 I18N_LANG=""
 
-declare -gA OMABLOT_I18N=()
+declare -gA OMACONF_I18N=()
 
 i18n_normalize() {
     local raw="${1,,}"
@@ -18,7 +18,7 @@ i18n_detect_language() {
     local candidate=""
     local lang=""
 
-    for candidate in "${OMABLOT_LANG:-}" "${LANGUAGE:-}" "${LC_ALL:-}" "${LC_MESSAGES:-}" "${LANG:-}"; do
+    for candidate in "${OMACONF_LANG:-}" "${LANGUAGE:-}" "${LC_ALL:-}" "${LC_MESSAGES:-}" "${LANG:-}"; do
         if [[ -n "$candidate" && "$candidate" != "C" && "$candidate" != "POSIX" ]]; then
             lang="$(i18n_normalize "$candidate")"
             break
@@ -56,7 +56,7 @@ i18n_catalog_load() {
         key="${line%%=*}"
         value="${line#*=}"
         [[ -z "$key" ]] && continue
-        OMABLOT_I18N["$key"]="$value"
+        OMACONF_I18N["$key"]="$value"
     done < "$catalog"
 }
 
@@ -74,14 +74,14 @@ i18n_init() {
     fi
 
     I18N_LANG="$lang"
-    export OMABLOT_LANG="$lang"
+    export OMACONF_LANG="$lang"
     return 0
 }
 
 t() {
     local msgid="$1"
     shift
-    local format="${OMABLOT_I18N[$msgid]:-}"
+    local format="${OMACONF_I18N[$msgid]:-}"
 
     [[ -n "$format" ]] || format="$msgid"
 
@@ -112,7 +112,7 @@ err() {
 }
 
 i18n_status() {
-    printf 'language=%s\ncatalog=%s\nmessages=%s\n' "$I18N_LANG" "$I18N_DIR" "${#OMABLOT_I18N[@]}"
+    printf 'language=%s\ncatalog=%s\nmessages=%s\n' "$I18N_LANG" "$I18N_DIR" "${#OMACONF_I18N[@]}"
 }
 
 i18n_list() {

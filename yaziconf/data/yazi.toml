@@ -16,7 +16,7 @@ image_filter = "triangle"
 image_quality = 85
 
 [opener]
-# >>> omablot obscure >>>
+# >>> omaconf obscure >>>
 obscure-view = [ { run = "obscure-view %s", desc = "Unlock with obscure password", block = true, for = "unix" }, ]
 edit = [
 	{ run = '${EDITOR:-micro} %s', desc = "Edit with micro", block = true, for = "unix" },
@@ -38,7 +38,7 @@ extract = [
 ]
 
 [open]
-# >>> omablot obscure >>>
+# >>> omaconf obscure >>>
 prepend_rules = [
 	{ url = "*2fa*", use = "obscure-view" },
 	{ url = "*two*factor*", use = "obscure-view" },
@@ -60,7 +60,7 @@ prepend_rules = [
 	{ url = "*.key", use = "obscure-view" },
 	{ url = "*.kdbx*", use = "obscure-view" },
 ]
-# <<< omablot obscure <<<
+# <<< omaconf obscure <<<
 rules = [
 	{ mime = "text/*", use = "edit" },
 	{ mime = "application/json", use = "edit" },
@@ -76,7 +76,7 @@ rules = [
 	{ mime = "application/x-7z-compressed", use = "extract" },
 	{ url = "*.md", use = "edit" },
 ]
-# >>> omablot obscure >>>
+# >>> omaconf obscure >>>
 [plugin]
 prepend_previewers = [
 	{ url = "*2fa*", run = "obscure" },
@@ -99,4 +99,4 @@ prepend_previewers = [
 	{ url = "*.key", run = "obscure" },
 	{ url = "*.kdbx*", run = "obscure" },
 ]
-# <<< omablot obscure <<<
+# <<< omaconf obscure <<<

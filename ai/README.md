@@ -40,7 +40,7 @@ Real file for module runs only when called from entry with active internal flag,
 Inspection code without comments:
 
 ```bash
-printf '%s\n' "$OMABLOT_AI_DEBLOAT"
+printf '%s\n' "$OMACONF_AI_DEBLOAT"
 ls /home
 systemctl --user status omarchy-crash-watch.service
 omarchy plugin list
@@ -77,4 +77,4 @@ bash -n scripts/modules/40-ai.sh
 
 ## Shared rules
 
-Native Bash automation with rigid mode, foreground, warns for non critical steps, paths from real homes, strict idempotence. Details in `AGENTS.md`. Family contract in profile repo `omablot/.github` inside `docs`.
+Native Bash automation with rigid mode, foreground, warns for non critical steps, paths from real homes, strict idempotence. Details in `AGENTS.md`. Family contract in profile repo `omaconf/.github` inside `docs`.

@@ -7,7 +7,7 @@ description: >-
 # Idempotent Bash Automation
 
 ## Overview
-This skill defines standards and procedures for authoring safe, predictable, and idempotent Bash administration scripts, testing harnesses, and verification suites within omablot.
+This skill defines standards and procedures for authoring safe, predictable, and idempotent Bash administration scripts, testing harnesses, and verification suites within omaconf.
 
 ## Native Scripting Standards
 Scripts must use strict shell flags `set -euo pipefail` without Python runtimes or external script dependencies. Never use `|| true` to suppress return codes. Use `|| warn "message"` exclusively for non-critical steps that are intentionally permitted to continue upon failure. Avoid background execution or `systemd-run`; all automation steps must run synchronously in the foreground with direct stdout logging. User paths must never be hardcoded and must be derived dynamically from `$HOME` or `/home/*`.

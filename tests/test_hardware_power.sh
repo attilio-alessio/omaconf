@@ -12,7 +12,7 @@ test_section "Hardware & Battery Power Management Policy"
 POWER_MODULE="$PROJECT_DIR/scripts/modules/89-battery-charge.sh"
 HARDWARE_POWER_MODULE="$PROJECT_DIR/scripts/modules/90-hardware-power.sh"
 assert_file_exists "hardware power module exists" "$POWER_MODULE"
-assert_file_contains "power module provisions /etc/omablot/power.conf" "$POWER_MODULE" "/etc/omablot/power.conf"
+assert_file_contains "power module provisions /etc/omaconf/power.conf" "$POWER_MODULE" "/etc/omaconf/power.conf"
 assert_file_contains "power module sets 75% battery limit policy" "$POWER_MODULE" "BATTERY_CHARGE_LIMIT=75"
 assert_file_contains "power module provisions udev battery rule" "$POWER_MODULE" "98-battery-charge-threshold.rules"
 assert_file_contains "power module provisions systemd-tmpfiles rule" "$POWER_MODULE" "battery-charge-threshold.conf"
@@ -22,8 +22,8 @@ assert_file_contains "hardware power module selects deep sleep when supported" "
 assert_file_exists "battery threshold helper exists" "$PROJECT_DIR/scripts/lib/set-battery-charge-limit.sh"
 assert_file_exists "battery resume helper exists" "$PROJECT_DIR/scripts/lib/battery-charge-resume.sh"
 
-if [[ -f /etc/omablot/power.conf ]]; then
-    assert_file_contains "power.conf defines BATTERY_CHARGE_LIMIT" "/etc/omablot/power.conf" "BATTERY_CHARGE_LIMIT=[0-9]+"
+if [[ -f /etc/omaconf/power.conf ]]; then
+    assert_file_contains "power.conf defines BATTERY_CHARGE_LIMIT" "/etc/omaconf/power.conf" "BATTERY_CHARGE_LIMIT=[0-9]+"
 fi
 
 if [[ -f /etc/udev/rules.d/98-battery-charge-threshold.rules ]]; then
@@ -37,7 +37,7 @@ if [[ -f /etc/tmpfiles.d/battery-charge-threshold.conf ]]; then
 fi
 
 if [[ -f /etc/systemd/system/battery-charge-threshold.service ]]; then
-    assert_file_contains "battery service applies the shared helper" "/etc/systemd/system/battery-charge-threshold.service" "omablot-set-battery-charge-limit"
+    assert_file_contains "battery service applies the shared helper" "/etc/systemd/system/battery-charge-threshold.service" "omaconf-set-battery-charge-limit"
     assert_true "battery charge threshold service is enabled" "systemctl is-enabled battery-charge-threshold.service &>/dev/null || [[ -L /etc/systemd/system/multi-user.target.wants/battery-charge-threshold.service ]]"
 fi
 
@@ -54,7 +54,7 @@ check_live_battery_threshold() {
     return 0
 }
 
-if ls /sys/class/power_supply/BAT*/charge_control_end_threshold &>/dev/null && [[ -f /etc/omablot/power.conf ]]; then
+if ls /sys/class/power_supply/BAT*/charge_control_end_threshold &>/dev/null && [[ -f /etc/omaconf/power.conf ]]; then
     assert_true "live battery charge threshold matches policy (75%)" "check_live_battery_threshold"
 fi
 

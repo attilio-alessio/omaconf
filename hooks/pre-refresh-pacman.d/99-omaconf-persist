@@ -1,14 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-OMABLOT_I18N_BOOT="${OMABLOT_I18N_BOOT:-$SCRIPT_DIR/../i18n/i18n-boot.sh}"
-[[ -f "$OMABLOT_I18N_BOOT" ]] || OMABLOT_I18N_BOOT="$SCRIPT_DIR/../../scripts/lib/i18n-boot.sh"
-if [[ -f "$OMABLOT_I18N_BOOT" ]]; then
-    . "$OMABLOT_I18N_BOOT"
+OMACONF_I18N_BOOT="${OMACONF_I18N_BOOT:-$SCRIPT_DIR/../i18n/i18n-boot.sh}"
+[[ -f "$OMACONF_I18N_BOOT" ]] || OMACONF_I18N_BOOT="$SCRIPT_DIR/../../scripts/lib/i18n-boot.sh"
+if [[ -f "$OMACONF_I18N_BOOT" ]]; then
+    . "$OMACONF_I18N_BOOT"
 else
     warn() { printf '%s: %s\n' "Warning" "$1" >&2; }
 fi
-PIN_FILES=("/etc/pacman.d/omablot/ignore-pkgs.list" "/etc/pacman.d/omasec/ignore-pkgs.list")
+PIN_FILES=("/etc/pacman.d/omaconf/ignore-pkgs.list" "/etc/pacman.d/omasec/ignore-pkgs.list")
 PINS=""
 for PIN_FILE in "${PIN_FILES[@]}"; do
   [[ -f "$PIN_FILE" ]] || continue

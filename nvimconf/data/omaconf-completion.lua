@@ -1,4 +1,4 @@
--- omablot completion: keywords only, never buffer words.
+-- omaconf completion: keywords only, never buffer words.
 -- blink.cmp ships buffer-word suggestions through the `buffer` source;
 -- this spec removes it from the defaults and disables the provider so only
 -- LSP keywords, paths and snippets complete.

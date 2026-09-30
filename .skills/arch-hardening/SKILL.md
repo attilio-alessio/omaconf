@@ -25,7 +25,7 @@ The UFW firewall operates with default deny incoming and default allow outgoing 
 Authentication policies enforce lockout after five consecutive failed attempts for 900 seconds in `/etc/security/faillock.conf`. Password complexity is mandated in `/etc/security/pwquality.conf`. User access control lists are defined in `/etc/security/access.conf` and core dump limits are disabled in `/etc/security/limits.d/99-no-core.conf`.
 
 ## Hardware and Battery Power Management
-Battery health protection enforces a perpetual 75% charge limit across all present and future batteries (`BAT*`, `BATT*`). Policy is defined in `/etc/omablot/power.conf` (`BATTERY_CHARGE_LIMIT=75`). Persistence across boots, kernel updates, hotplugs, and suspend/resume cycles is guaranteed through triple-layer automation:
+Battery health protection enforces a perpetual 75% charge limit across all present and future batteries (`BAT*`, `BATT*`). Policy is defined in `/etc/omaconf/power.conf` (`BATTERY_CHARGE_LIMIT=75`). Persistence across boots, kernel updates, hotplugs, and suspend/resume cycles is guaranteed through triple-layer automation:
 - Udev rules in `/etc/udev/rules.d/98-battery-charge-threshold.rules` intercept device creation and power supply changes.
 - Systemd-tmpfiles drop-in in `/etc/tmpfiles.d/battery-charge-threshold.conf` applies sysfs thresholds at early boot (`w- /sys/class/power_supply/BAT*/charge_control_end_threshold`).
 - Systemd service `battery-charge-threshold.service` re-applies the policy on boot and sleep/resume transitions (`suspend.target`, `hibernate.target`, `hybrid-sleep.target`).

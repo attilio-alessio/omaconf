@@ -13,7 +13,7 @@ BOLD='\033[1m'
 NC='\033[0m'
 
 echo -e "${BOLD}${CYAN}======================================================${NC}"
-echo -e "${BOLD}${CYAN}        OMABLOT COMPREHENSIVE TEST SUITE RUNNER        ${NC}"
+echo -e "${BOLD}${CYAN}        OMACONF COMPREHENSIVE TEST SUITE RUNNER        ${NC}"
 echo -e "${BOLD}${CYAN}======================================================${NC}"
 
 TOTAL_SUITES=0
