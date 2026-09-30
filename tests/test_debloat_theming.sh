@@ -34,6 +34,84 @@ assert_file_exists "theme preview apply helper exists" "$PROJECT_DIR/theme-previ
 assert_file_contains "theme preview apply creates missing user overlays" "$PROJECT_DIR/theme-previews/apply.sh" 'install -d -m 700'
 assert_file_contains "theme preview apply clears selector cache" "$PROJECT_DIR/theme-previews/apply.sh" 'theme-selector'
 
+REBUILD_PREVIEWS="$PROJECT_DIR/theme-previews/rebuild-previews.sh"
+assert_file_exists "theme preview rebuild helper exists" "$REBUILD_PREVIEWS"
+assert_file_not_contains "rebuild script no longer hardcodes a default theme list" "$REBUILD_PREVIEWS" 'themes=\(last-horizon lupine\)'
+assert_file_not_contains "rebuild script no longer special-cases lupine" "$REBUILD_PREVIEWS" "theme.*==.*'lupine'"
+
+PREVIEW_LIB="$PROJECT_DIR/scripts/lib/theme-preview.sh"
+assert_file_exists "theme preview normalization library exists" "$PREVIEW_LIB"
+assert_file_contains "theme preview library declares the canvas" "$PREVIEW_LIB" "THEME_PREVIEW_CANVAS"
+assert_file_contains "theme preview canvas matches the stock theme grid" "$PREVIEW_LIB" "1800x1012"
+assert_file_contains "theme preview library keeps the stock backup" "$PREVIEW_LIB" "theme-preview-stock"
+assert_file_contains "theme preview library backs the original up" "$PREVIEW_LIB" 'cp -a "\$preview" "\$original"'
+assert_file_contains "theme preview library resizes with magick" "$PREVIEW_LIB" "magick"
+assert_file_contains "theme preview library installs the result" "$PREVIEW_LIB" "install -m 644"
+assert_file_contains "theme preview library requires an alpha channel" "$PREVIEW_LIB" '\[\[ "\$type" == \*Alpha \]\]'
+assert_file_contains "theme preview library writes an rgba png" "$PREVIEW_LIB" "PNG32:"
+assert_true "theme preview library never forces pixel density units" "! grep -q 'PixelsPerInch' '$PREVIEW_LIB'"
+assert_file_contains "theme preview library keeps the overlay store" "$PREVIEW_LIB" "theme-preview-overlay"
+assert_file_contains "theme preview library restores stored overlays" "$PREVIEW_LIB" "theme_preview_restore_overlays"
+assert_file_contains "theming module sources the preview library" "$THEMING_MODULE" "lib/theme-preview.sh"
+assert_file_contains "theming module normalizes preview size" "$THEMING_MODULE" "theme_preview_normalize"
+assert_file_contains "theming module deploys the preview library to hooks lib" "$THEMING_MODULE" 'hooks/lib'
+assert_file_contains "post-update hook resolves the deployed preview library" "$PROJECT_DIR/hooks/post-update.d/99-omaconf-persist" "lib/theme-preview.sh"
+assert_file_contains "post-update hook reapplies preview normalization" "$PROJECT_DIR/hooks/post-update.d/99-omaconf-persist" "theme_preview_normalize"
+
+REBUILD_GEOMETRY="$PROJECT_DIR/theme-previews/rebuild-previews.sh"
+assert_file_contains "rebuild script keeps a reference canvas" "$REBUILD_GEOMETRY" 'YAZI_TILE_CANVAS="1800x1012"'
+assert_file_contains "rebuild script keeps a reference tile offset" "$REBUILD_GEOMETRY" 'YAZI_TILE_OFFSET="906,520"'
+assert_file_contains "rebuild script keeps a reference tile size" "$REBUILD_GEOMETRY" 'YAZI_TILE_SIZE="878x480"'
+assert_file_contains "rebuild script scales the tile to the real canvas width" "$REBUILD_GEOMETRY" 'tile_x=\$\(\(ref_tile_x \* canvas_width / ref_canvas_width\)\)'
+assert_file_contains "rebuild script scales the tile to the real canvas height" "$REBUILD_GEOMETRY" 'tile_y=\$\(\(ref_tile_y \* canvas_height / ref_canvas_height\)\)'
+assert_file_contains "rebuild script scales the tile width to the canvas" "$REBUILD_GEOMETRY" 'tile_width=\$\(\(ref_tile_width \* canvas_width / ref_canvas_width\)\)'
+assert_file_contains "rebuild script scales the tile height to the canvas" "$REBUILD_GEOMETRY" 'tile_height=\$\(\(ref_tile_height \* canvas_height / ref_canvas_height\)\)'
+assert_true "rebuild script hardcodes no absolute tile pixel" "! grep -qE '^[[:space:]]*tile_(x|y|width|height)=[0-9]+$' '$REBUILD_GEOMETRY'"
+assert_file_contains "rebuild script writes the composite as rgba" "$REBUILD_GEOMETRY" 'PNG32:\$output_dir/preview.png'
+
+PREVIEW_APPLY="$PROJECT_DIR/theme-previews/apply.sh"
+assert_file_contains "apply helper supports a system scope" "$PREVIEW_APPLY" "SYSTEM_SCOPE"
+assert_file_contains "apply helper installs system previews as root" "$PREVIEW_APPLY" 'install -m 644 -o root -g root'
+assert_file_contains "apply helper records the overlay for the post-update hook" "$PREVIEW_APPLY" "theme_preview_store_overlay"
+assert_file_contains "apply helper refuses an implicit system scope" "$PREVIEW_APPLY" "System scope requires explicit themes"
+
+if command -v magick &>/dev/null; then
+    PREVIEW_SANDBOX="$(mktemp -d)"
+    mkdir -p "$PREVIEW_SANDBOX/themes/last-horizon" "$PREVIEW_SANDBOX/themes/nord" "$PREVIEW_SANDBOX/themes/lupine" \
+        "$PREVIEW_SANDBOX/cache" "$PREVIEW_SANDBOX/store"
+    magick -size 2880x1800 xc:red "$PREVIEW_SANDBOX/themes/last-horizon/preview.png"
+    magick -size 1800x1012 xc:blue -alpha off "$PREVIEW_SANDBOX/themes/nord/preview.png"
+    magick -size 1800x1012 xc:green "$PREVIEW_SANDBOX/store/lupine.png"
+    magick -size 2880x1800 xc:yellow "$PREVIEW_SANDBOX/themes/lupine/preview.png"
+    (
+        set -euo pipefail
+        warn() { printf '%s\n' "$1" >&2; }
+        log() { :; }
+        source "$PREVIEW_LIB"
+        THEME_PREVIEW_THEMES_ROOT="$PREVIEW_SANDBOX/themes"
+        THEME_PREVIEW_BACKUP_DIR="$PREVIEW_SANDBOX/cache"
+        THEME_PREVIEW_OVERLAY_STORE="$PREVIEW_SANDBOX/store"
+        theme_preview_normalize
+    ) 2>/dev/null
+    assert_true "theme preview library normalizes an oversized stock preview" \
+        "[[ \"\$(identify -format '%wx%h' '$PREVIEW_SANDBOX/themes/last-horizon/preview.png')\" == 1800x1012 ]]"
+    assert_true "theme preview library leaves a preview already on the canvas alone" \
+        "[[ \"\$(identify -format '%wx%h' '$PREVIEW_SANDBOX/themes/nord/preview.png')\" == 1800x1012 ]]"
+    assert_true "theme preview library adds the missing alpha channel" \
+        "[[ \"\$(identify -format '%[type]' '$PREVIEW_SANDBOX/themes/nord/preview.png')\" == *Alpha ]]"
+    assert_true "theme preview library keeps the stock density at 72" \
+        "[[ \"\$(identify -format '%x' '$PREVIEW_SANDBOX/themes/nord/preview.png')\" == 72 ]]"
+    assert_true "theme preview library normalizes depth to 8" \
+        "[[ \"\$(identify -format '%z' '$PREVIEW_SANDBOX/themes/nord/preview.png')\" == 8 ]]"
+    assert_true "theme preview library keeps the stock original as a backup" \
+        "[[ -f '$PREVIEW_SANDBOX/cache/last-horizon-2880x1800.png' ]]"
+    assert_true "theme preview library restores a stored overlay" \
+        "cmp -s '$PREVIEW_SANDBOX/store/lupine.png' '$PREVIEW_SANDBOX/themes/lupine/preview.png'"
+    assert_true "theme preview library is idempotent" \
+        "before=\$(md5sum '$PREVIEW_SANDBOX'/themes/*/preview.png); source '$PREVIEW_LIB'; THEME_PREVIEW_THEMES_ROOT='$PREVIEW_SANDBOX/themes' THEME_PREVIEW_BACKUP_DIR='$PREVIEW_SANDBOX/cache' THEME_PREVIEW_OVERLAY_STORE='$PREVIEW_SANDBOX/store' theme_preview_normalize; after=\$(md5sum '$PREVIEW_SANDBOX'/themes/*/preview.png); [[ \"\$before\" == \"\$after\" ]]"
+    rm -rf "$PREVIEW_SANDBOX"
+fi
+
 if command -v pacman &>/dev/null && [[ -f /etc/arch-release ]] && [[ -f /etc/pacman.d/omaconf/ignore-pkgs.list ]]; then
     assert_true "herdr installed" "pacman -Q herdr &>/dev/null"
     assert_true "gum installed" "pacman -Q gum &>/dev/null"
