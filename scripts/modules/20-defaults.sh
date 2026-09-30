@@ -122,7 +122,7 @@ for user_home in /home/*; do
     if [[ ! -f "$_tf_dir/config" ]]; then
         cat > "$_tf_dir/config" << 'TFEOF' 2>/dev/null || warn "defaults.portal_config_skipped" "$_user"
 [filechooser]
-cmd=yazi-wrapper.sh
+cmd=/usr/share/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh
 default_dir=$HOME
 env=TERMCMD='kitty --title "terminal filechooser"'
 open_mode=suggested
