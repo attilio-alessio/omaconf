@@ -7,32 +7,16 @@ description: >-
 # Regression Prevention and Desktop Stability
 
 ## Overview
-This skill establishes strict operational standards and safety requirements to ensure that security hardening, package debloating, and system configurations never introduce functional regressions. Hardening policies must never break essential system services, desktop user sessions, authentication flows, or display locking mechanisms.
+This skill establishes strict operational standards and safety requirements so that security hardening, package debloating and system configuration never introduce functional regressions. Hardening policies must never break essential system services, desktop user sessions, authentication flows or display locking mechanisms. A lockdown that makes the desktop unusable is a failed lockdown.
 
 ## Core Services Protection
-System hardening policies, sandboxing directives, and access rules must preserve the integrity and accessibility of critical desktop and system services:
-- **Session Bus and IPC**: D-Bus user session (`$DBUS_SESSION_BUS_ADDRESS` and `/run/user/$UID/bus`) must remain reachable. Do not apply sandbox restrictions or environment overrides that strip session bus variables.
-- **Authorization & Privileges**: Polkit (`polkit.service`) must remain enabled and functional to permit desktop privilege escalation dialogs.
-- **Audio Stack**: PipeWire and WirePlumber (`pipewire.service`, `pipewire-pulse.service`, `wireplumber.service`) must not be restricted or deprived of real-time scheduling permissions.
-- **Network Stack**: NetworkManager (`NetworkManager.service`) configuration must not be overridden with conflicting drop-ins (e.g., avoid creating `/etc/NetworkManager/conf.d/security.conf` or breaking DNS resolution).
-- **Display Managers & Greeters**: GDM, SDDM, LightDM, and greetd must be explicitly allowed in `/etc/security/access.conf` (e.g., `+:gdm:LOCAL`, `+:sddm:LOCAL`, `+:greetd:LOCAL`, `+:lightdm:LOCAL`) to prevent authentication lockout at boot.
-- **User Runtime Directories**: Never alter ownership, sticky permissions, or mount parameters of `/run/user/$UID` in ways that break user service sockets.
+System hardening policies, sandboxing directives and access rules must preserve the integrity and accessibility of the services a live session depends on. The D-Bus user session must stay reachable, so never apply sandbox restrictions or environment overrides that strip the session bus variables or the user runtime directory. The authorization service must remain enabled and functional so the desktop can still ask for privilege escalation. The audio stack must not be restricted or deprived of its real time scheduling permissions. Network manager configuration must never be shadowed by a conflicting drop-in, and DNS resolution must keep working. Every display manager and greeter must be explicitly allowed in the access control configuration so a boot cannot lock the user out. Never alter the ownership, sticky permissions or mount parameters of the user runtime directory in ways that break user service sockets.
 
 ## Lockscreen Regression Prevention
-Double lockscreens, frozen lockscreens, and unresponsive blank screen overlays represent severe UX and security failures. The following rules must be enforced:
-- **Single Canonical Lockscreen Handler**: Only one lockscreen mechanism (such as `hyprlock`, `swaylock`, or `gtklock`) may be active per session. Never configure concurrent locker daemons or duplicate locker calls across idle monitors (e.g., `swayidle`, `hypridle`) and systemd sleep inhibitors.
-- **No Unresponsive/Fake Lock Overlays**: Ensure locker processes are properly bound to the active Wayland/X11 compositor session. Never spawn unmanaged background overlays or dummy screens that lack input handling or active authentication backends.
-- **PAM Stack Compatibility**: Ensure PAM configurations (`/etc/pam.d/system-auth`, `/etc/pam.d/hyprlock`, etc.) and `faillock` settings do not cause authentication deadlocks or endless unlock loop failures.
-- **Input Device Authorization**: USBGuard rules must explicitly allow HID input interfaces (`03:*:*`) so that keyboards and mice remain functional on the lockscreen.
-- **Clean Lock-Before-Sleep**: Session lock commands dispatched prior to suspend must synchronize cleanly and avoid spawning orphan background processes that persist after resume.
+Double lockscreens, frozen lockscreens and unresponsive blank screen overlays are severe user experience and security failures. Only one lockscreen mechanism may be active per session, so never configure concurrent locker daemons or duplicate locker calls across the idle monitor and the sleep inhibitor. A locker must be properly bound to the active compositor session, so never spawn unmanaged background overlays or dummy screens that lack input handling or a real authentication backend. PAM configurations and the faillock settings must not cause authentication deadlocks or an endless unlock loop. USBGuard rules must explicitly allow human interface device interfaces so keyboards and mice remain usable on the lockscreen. A lock command dispatched before suspend must synchronize cleanly and must not leave orphan processes behind after resume.
 
 ## Hardening and Sandboxing Boundaries
-- **Systemd Drop-ins**: Sandboxing directives such as `ProtectHome`, `ProtectSystem`, `PrivateTmp`, and `RestrictedAddressFamilies` must only be applied to standalone daemons (e.g., `sshd.service`). Never apply blanket sandboxing to user session services, compositor units, or desktop notification services.
-- **AppArmor Profiles**: Profiles must be tested and verified to ensure required IPC sockets, cryptographic libraries, and configuration paths remain readable. Never enforce profiles on desktop session components without explicit allowance for Wayland/X11 socket access.
-- **Kernel sysctl Safety**: Kernel parameters must preserve standard IPC, shared memory (`/run/shm`), and local socket communications required by desktop applications.
+Sandboxing directives belong only on standalone daemons such as the SSH daemon. Never apply blanket sandboxing to user session services, compositor units or desktop notification services. AppArmor profiles must be tested so the required IPC sockets, cryptographic libraries and configuration paths stay readable, and must never be enforced on desktop session components without an explicit allowance for the display server sockets. Kernel parameters must preserve standard interprocess communication, shared memory and local socket behaviour that desktop applications rely on.
 
 ## Verification Workflow
-Before and after applying any modification:
-1. Run `bash scripts/test-omarchy-compat.sh` to assert that desktop session services, audio, D-Bus, network, and package parity remain fully intact.
-2. Run `bash scripts/verify.sh` to validate that security controls are applied without causing state drift or failures.
-3. Verify that all scripts execute idempotently without side effects or unhandled error traps.
+Before and after any modification, run the compatibility suite to assert that desktop session services, audio, the session bus, the network and package parity remain intact. Run the verifier to confirm the security controls are applied without state drift. Confirm that every script executes idempotently and that no failure is silently swallowed. Both suites run in continuous integration, so a change that regresses the desktop fails the build rather than the user's session.
