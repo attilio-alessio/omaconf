@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 set -euo pipefail
 
 OMAMP_GIT="https://github.com/omaconf/omamp.git"

@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 
 detect_system_timezone() {
     local tz="${OMACONF_FORCE_TZ:-}"

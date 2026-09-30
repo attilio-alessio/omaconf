@@ -72,13 +72,14 @@ for installer in cliconf microconf nvimconf yaziconf zedconf; do
         "$PROJECT_DIR/$installer/install.sh" "userconf.sh"
 done
 
-if (($UID != 0)); then
+if ((UID != 0)); then
     USERCONF_SANDBOX="$(mktemp -d)"
     mkdir -p "$USERCONF_SANDBOX/src" "$USERCONF_SANDBOX/dst"
     printf 'first\n' > "$USERCONF_SANDBOX/src/payload"
     printf 'stale\n' > "$USERCONF_SANDBOX/dst/payload"
     (
         set -euo pipefail
+        # shellcheck source=../scripts/lib/userconf.sh
         source "$USERCONF_LIB"
         install_user_file "$USERCONF_SANDBOX/src/payload" "$USERCONF_SANDBOX/dst/payload"
     ) 2>/dev/null
@@ -88,6 +89,7 @@ if (($UID != 0)); then
         "[[ -f '$USERCONF_SANDBOX/dst/payload.bak' ]] && ! ls '$USERCONF_SANDBOX/dst/' | grep -qE '\.bak-'"
     (
         set -euo pipefail
+        # shellcheck source=../scripts/lib/userconf.sh
         source "$USERCONF_LIB"
         install_user_file "$USERCONF_SANDBOX/src/payload" "$USERCONF_SANDBOX/dst/payload"
         install_user_file "$USERCONF_SANDBOX/src/payload" "$USERCONF_SANDBOX/dst/payload"
@@ -98,6 +100,7 @@ if (($UID != 0)); then
     printf '# rc\n\n# >>> omaconf sandbox >>>\nold() { :; }\n# <<< omaconf sandbox <<<\n' > "$USERCONF_SANDBOX/rc"
     (
         set -euo pipefail
+        # shellcheck source=../scripts/lib/userconf.sh
         source "$USERCONF_LIB"
         install_shell_block "$USERCONF_SANDBOX/rc" "# >>> omaconf sandbox >>>" "# <<< omaconf sandbox <<<" << 'BLOCK'
 new() { :; }
@@ -113,6 +116,7 @@ BLOCK
     printf '# rc\n\n# >>> omaconf sandbox >>>\nnew() { :; }\n# <<< omaconf sandbox <<<\n' > "$USERCONF_SANDBOX/rc-idem"
     (
         set -euo pipefail
+        # shellcheck source=../scripts/lib/userconf.sh
         source "$USERCONF_LIB"
         install_shell_block "$USERCONF_SANDBOX/rc-idem" "# >>> omaconf sandbox >>>" "# <<< omaconf sandbox <<<" << 'BLOCK'
 new() { :; }

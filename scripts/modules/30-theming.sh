@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 set -euo pipefail
 
 if [[ -f "$PROJECT_DIR/scripts/lib/theme-preview.sh" ]]; then

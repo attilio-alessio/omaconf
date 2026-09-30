@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 
 _omaconf_i18n_stub() {
     t() { printf -- '%s' "$1"; }
@@ -21,6 +23,7 @@ _omaconf_i18n_resolve() {
 }
 
 if _omaconf_i18n_path=$(_omaconf_i18n_resolve) && [[ -f "$_omaconf_i18n_path" ]]; then
+    # shellcheck disable=SC1090
     source "$_omaconf_i18n_path" || true
     unset _omaconf_i18n_path
     if declare -F t >/dev/null 2>&1; then

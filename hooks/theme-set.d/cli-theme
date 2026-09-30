@@ -36,22 +36,17 @@ get_color() {
 generate_cli_theme() {
     local toml="$1"
 
-    local bg fg dark_bg light_bg selection muted accent red green yellow blue magenta cyan orange bright_fg
+    local bg fg selection muted accent red green yellow cyan bright_fg
 
     bg=$(get_color "background" "#1e1e2e" "$toml")
     fg=$(get_color "foreground" "#cdd6f4" "$toml")
-    dark_bg=$(get_color "dark_background" "#161622" "$toml")
-    light_bg=$(get_color "lighter_background" "#313244" "$toml")
     selection=$(get_color "selection" "#45475a" "$toml")
     muted=$(get_color "muted" "#585b70" "$toml")
     accent=$(get_color "accent" "#89b4fa" "$toml")
     red=$(get_color "red" "#f38ba8" "$toml")
     green=$(get_color "green" "#a6e3a1" "$toml")
     yellow=$(get_color "yellow" "#f9e2af" "$toml")
-    blue=$(get_color "blue" "#89b4fa" "$toml")
-    magenta=$(get_color "magenta" "#f5c2e7" "$toml")
     cyan=$(get_color "cyan" "#94e2d5" "$toml")
-    orange=$(get_color "orange" "#fab387" "$toml")
     bright_fg=$(get_color "bright_foreground" "$fg" "$toml")
 
     # 1. FZF environment settings

@@ -85,8 +85,11 @@ if command -v magick &>/dev/null; then
     magick -size 2880x1800 xc:yellow "$PREVIEW_SANDBOX/themes/lupine/preview.png"
     (
         set -euo pipefail
+        # shellcheck disable=SC2329
         warn() { printf '%s\n' "$1" >&2; }
+        # shellcheck disable=SC2329
         log() { :; }
+        # shellcheck source=../scripts/lib/theme-preview.sh
         source "$PREVIEW_LIB"
         THEME_PREVIEW_THEMES_ROOT="$PREVIEW_SANDBOX/themes"
         THEME_PREVIEW_BACKUP_DIR="$PREVIEW_SANDBOX/cache"
