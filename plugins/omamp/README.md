@@ -12,7 +12,7 @@ Link the repository to the Omarchy plugins directory, enable the plugin identifi
 
 ```bash
 mkdir -p ~/.config/omarchy/plugins
-ln -sfn /home/kairosci/Projects/omamp ~/.config/omarchy/plugins/krosci.omamp
+ln -sfn "$(pwd)" ~/.config/omarchy/plugins/krosci.omamp
 omarchy plugin enable krosci.omamp
 omarchy bar add krosci.omamp --section right
 omarchy restart shell
@@ -20,10 +20,10 @@ omarchy restart shell
 
 ### Git Repository Installation
 
-Install the plugin directly from the remote Git repository into the Omarchy configuration.
+Install the plugin directly from the remote Git repository into the Omarchy configuration. The source below is the one declared in the project plugin catalog.
 
 ```bash
-omarchy plugin add https://github.com/krosci/omamp.git --enable --yes
+omarchy plugin add https://github.com/omaconf/omamp.git --enable --yes
 omarchy bar move krosci.omamp --after omarchy.clock
 omarchy restart shell
 ```
