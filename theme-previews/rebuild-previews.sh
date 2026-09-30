@@ -3,13 +3,26 @@ set -euo pipefail
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
-ARTIFACTS_DIR="$(mktemp -d /tmp/omablot-preview-artifacts.XXXXXX)"
 STAGING_DIR=/tmp/homeshot
 STAGING_OWNED=0
-ORIGINAL_THEME="$(omarchy theme current)"
-ORIGINAL_WORKSPACE="$(hyprctl -j activeworkspace | jq -r '.id')"
 KITTY_PID=""
 CAPTURE_WORKSPACE=""
+
+if (($#)); then
+    themes=("$@")
+else
+    printf 'Usage: %s <theme> [theme...]\n' "${0##*/}" >&2
+    printf 'Previews stay stock upstream artwork unless a theme is named explicitly.\n' >&2
+    exit 2
+fi
+
+ARTIFACTS_DIR="$(mktemp -d /tmp/omaconf-preview-artifacts.XXXXXX)"
+ORIGINAL_THEME="$(omarchy theme current)"
+ORIGINAL_WORKSPACE="$(hyprctl -j activeworkspace | jq -r '.id')"
+
+YAZI_TILE_CANVAS="1800x1012"
+YAZI_TILE_OFFSET="906,520"
+YAZI_TILE_SIZE="878x480"
 
 cleanup() {
     local status=$?
@@ -47,12 +60,6 @@ for candidate in {90..999}; do
 done
 [[ -n "$CAPTURE_WORKSPACE" ]] || { printf 'No free capture workspace is available.\n' >&2; exit 1; }
 
-if (($#)); then
-    themes=("$@")
-else
-    themes=(last-horizon lupine)
-fi
-
 for theme in "${themes[@]}"; do
     [[ "$theme" =~ ^[a-z0-9-]+$ ]] || { printf 'Invalid theme slug: %s\n' "$theme" >&2; exit 2; }
     theme_dir="/usr/share/omarchy/themes/$theme"
@@ -74,21 +81,21 @@ for theme in "${themes[@]}"; do
     background="$(awk -F '"' '/^[[:space:]]*background[[:space:]]*=/{print $2; exit}' "$colors_file")"
     [[ "$background" =~ ^#[[:xdigit:]]{6}$ ]] || background='#101010'
     normalized_preview="$ARTIFACTS_DIR/$theme-stock.png"
-    preview_size="$(identify -format '%wx%h' "$stock_preview")"
-    if [[ "$preview_size" == '1800x1012' ]]; then
-        cp -- "$stock_preview" "$normalized_preview"
-    else
-        magick "$stock_preview" -resize '1800x1012!' "$normalized_preview"
-    fi
-    tile_x=906
-    tile_y=600
-    tile_width=878
-    tile_height=400
-    if [[ "$theme" == 'lupine' ]]; then
-        magick "$normalized_preview" -fill "$background" \
-            -draw "rectangle ${tile_x},520 $((tile_x + tile_width - 1)),$((tile_y - 1))" \
-            "$normalized_preview"
-    fi
+    cp -- "$stock_preview" "$normalized_preview"
+    source "$PROJECT_DIR/scripts/lib/theme-preview.sh"
+    THEME_PREVIEW_CANVAS="$YAZI_TILE_CANVAS"
+    theme_preview_normalize_file "$normalized_preview" || {
+        printf 'Preview normalization failed for %s\n' "$theme" >&2
+        exit 1
+    }
+    IFS='x' read -r canvas_width canvas_height <<< "$(identify -format '%wx%h' "$normalized_preview")"
+    IFS='x' read -r ref_canvas_width ref_canvas_height <<< "$YAZI_TILE_CANVAS"
+    IFS=',' read -r ref_tile_x ref_tile_y <<< "$YAZI_TILE_OFFSET"
+    IFS='x' read -r ref_tile_width ref_tile_height <<< "$YAZI_TILE_SIZE"
+    tile_x=$((ref_tile_x * canvas_width / ref_canvas_width))
+    tile_y=$((ref_tile_y * canvas_height / ref_canvas_height))
+    tile_width=$((ref_tile_width * canvas_width / ref_canvas_width))
+    tile_height=$((ref_tile_height * canvas_height / ref_canvas_height))
 
     setsid kitty --class termfilemanager \
         --start-as=fullscreen \
@@ -136,7 +143,8 @@ for theme in "${themes[@]}"; do
     magick "$normalized_preview" \
         -fill "$background" -draw "rectangle ${tile_x},${tile_y} $((tile_x + tile_width - 1)),$((tile_y + tile_height - 1))" \
         \( "$fitted_shot" -bordercolor "$accent" -border 2 \) \
-        -geometry "+${capture_x}+${capture_y}" -composite "$output_dir/preview.png"
+        -geometry "+${capture_x}+${capture_y}" -composite \
+        -depth 8 -density 72 "PNG32:$output_dir/preview.png"
 
     kill -- "-$KITTY_PID" 2>/dev/null || kill "$KITTY_PID" 2>/dev/null || :
     wait "$KITTY_PID" 2>/dev/null || :
