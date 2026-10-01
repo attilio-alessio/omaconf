@@ -36,6 +36,11 @@ if ! pacman -Q yazi &>/dev/null; then
     pacman -S --noconfirm --needed yazi
 fi
 
+log "defaults.7zip_install"
+if ! pacman -Q 7zip &>/dev/null; then
+    pacman -S --noconfirm --needed 7zip
+fi
+
 log "defaults.kitty_install"
 if ! pacman -Q kitty &>/dev/null; then
     pacman -S --noconfirm --needed kitty

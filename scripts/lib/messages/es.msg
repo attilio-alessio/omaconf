@@ -40,6 +40,7 @@ defaults.editor=Configuración de micro como editor predeterminado y aprovisiona
 defaults.editor_state_failed=fallo del chown del state para %s
 defaults.microconf_skipped=instalación de microconf omitida para %s
 defaults.yazi_install=Instalación de yazi (gestor de archivos mínimo)
+defaults.7zip_install=Instalación de 7zip (soporte de archivos comprimidos para yazi)
 defaults.yaziconf=Aprovisionamiento de yaziconf (sintaxis actual de opener)
 defaults.yaziconf_skipped=instalación de yaziconf omitida para %s
 defaults.trash_install=Instalación de trash-cli (borrado seguro para yazi)

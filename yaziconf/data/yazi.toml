@@ -34,7 +34,7 @@ play = [
 	{ run = 'mpv %s', desc = "Play with mpv", orphan = true, for = "unix" },
 ]
 extract = [
-	{ run = 'bsdtar -xvf %s', desc = "Extract archive here", block = true, for = "unix" },
+	{ run = '7z x %s', desc = "Extract archive here", block = true, for = "unix" },
 ]
 
 [open]
