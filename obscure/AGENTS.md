@@ -10,7 +10,7 @@ Provisioning pipeline in scripts setup runs with elevated privileges and delegat
 
 ## Ownership Details
 
-Yazi stage holds glob read and preview and icon and open blocks and binary install and per home plugin copy and pattern copy and marker guarded appends and ownership fix. Idle stage holds removal of stay awake indicator and screensaver off toggle with native blank and lock preserved. Opener holds system password ask with fallback and verify with drop of timestamp and text page or desktop open.
+Yazi stage holds glob read and preview and icon and open blocks and binary install and per home plugin copy and pattern copy and marker guarded appends and ownership fix. Idle stage holds removal of stay awake indicator and screensaver off toggle with native blank and lock preserved. Opener holds system password ask with fallback and verify with drop of timestamp and text page or pdf view or desktop open.
 
 ## Boundaries and Safety
 

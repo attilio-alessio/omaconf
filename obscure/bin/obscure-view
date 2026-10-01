@@ -40,6 +40,19 @@ is_text() {
     esac
 }
 
+is_pdf() {
+    local target="$1"
+    local mime=""
+    mime=$(file -b --mime-type "$target" 2>/dev/null) || return 1
+    case "$mime" in
+        application/pdf|application/x-pdf) return 0 ;;
+        *)
+            [[ "$target" == *.pdf || "$target" == *.PDF ]] && return 0
+            return 1
+            ;;
+    esac
+}
+
 [[ $# -ge 1 ]] || err "usage: obscure-view <file> [...]"
 command -v sudo &>/dev/null || err "sudo required to verify the system login password"
 
@@ -53,6 +66,16 @@ for target in "$@"; do
     [[ -f "$target" ]] || { warn "not a file: $target"; continue; }
     if is_text "$target"; then
         "$PAGER_BIN" "$target" 2>/dev/null || warn "pager skipped for $target"
+    elif is_pdf "$target"; then
+        if [[ -n "${WAYLAND_DISPLAY:-}" || -n "${DISPLAY:-}" ]] && command -v zathura &>/dev/null; then
+            (setsid zathura "$target" >/dev/null 2>&1 &) || xdg-open "$target" 2>/dev/null || warn "pdf viewer skipped for $target"
+        elif command -v pdftotext &>/dev/null; then
+            pdftotext "$target" - 2>/dev/null | "$PAGER_BIN" || xdg-open "$target" 2>/dev/null || warn "pdf viewer skipped for $target"
+        elif command -v zathura &>/dev/null; then
+            (setsid zathura "$target" >/dev/null 2>&1 &) || xdg-open "$target" 2>/dev/null || warn "pdf viewer skipped for $target"
+        else
+            xdg-open "$target" 2>/dev/null || warn "open skipped for $target"
+        fi
     else
         xdg-open "$target" 2>/dev/null || warn "open skipped for $target"
     fi

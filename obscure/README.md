@@ -58,7 +58,7 @@ Idempotence holds removal of absent files as null.
 
 ## Opener binary
 
-Real file for opener installed in system path asks password through system manager with terminal fallback, verifies with privileged command fed by pipe and at once drops timestamp, rejects empty password, pages text in pager and other types with desktop open.
+Real file for opener installed in system path asks password through system manager with terminal fallback, verifies with privileged command fed by pipe and at once drops timestamp, rejects empty password, pages text in pager, views PDF documents via zathura or pdftotext or desktop opener, and opens other types with desktop open.
 
 Usage code without comments:
 
