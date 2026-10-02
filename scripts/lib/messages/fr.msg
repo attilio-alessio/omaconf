@@ -163,6 +163,9 @@ security.clamav_update_deferred=mise à jour des signatures différée au démon
 
 power.charge=Application de la politique de seuil de charge de la batterie
 power.deep_sleep=Configuration de la veille profonde si elle est prise en charge
+power.suspend_resume=Configuration de la gestion de la veille et reprise
+power.suspend_mode=Configuration du mode de veille (%s)
+power.nvidia_suspend=Configuration des services d'alimentation NVIDIA
 power.charge_enable_skipped=activation de battery-charge-threshold ignorée
 power.charge_start_skipped=démarrage de battery-charge-threshold ignoré
 power.charge_write_failed=échec de l'écriture de la limite de charge sur %s
@@ -327,6 +330,7 @@ check.battery_tmpfiles=fichier tmpfiles de charge présent
 check.battery_service=service batterie activé
 check.battery_limit=limite de charge active à 75%
 check.deep_sleep=veille profonde configurée si prise en charge
+check.suspend_conf=configuration de veille valide
 check.weekly_audit=audit de sécurité hebdomadaire
 check.starship_config=configuration starship
 check.git_config=configuration git

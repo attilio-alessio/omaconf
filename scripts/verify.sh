@@ -180,8 +180,14 @@ tcheck "check.battery_service" "systemctl is-enabled battery-charge-threshold.se
 if ls /sys/class/power_supply/BAT*/charge_control_end_threshold &>/dev/null; then
     tcheck "check.battery_limit" "grep -qx '75' /sys/class/power_supply/BAT*/charge_control_end_threshold 2>/dev/null"
 fi
-if grep -qw deep /sys/power/mem_sleep 2>/dev/null; then
-    tcheck "check.deep_sleep" "grep -q '^MemorySleepMode=deep$' /etc/systemd/sleep.conf.d/99-omaconf-deep-sleep.conf"
+if [[ -r /sys/power/mem_sleep ]]; then
+    if grep -q '\[deep\]' /sys/power/mem_sleep; then
+        tcheck "check.suspend_conf" "grep -q '^MemorySleepMode=deep$' /etc/systemd/sleep.conf.d/99-omaconf-suspend.conf"
+    elif grep -q '\[s2idle\]' /sys/power/mem_sleep; then
+        tcheck "check.suspend_conf" "grep -q '^MemorySleepMode=s2idle$' /etc/systemd/sleep.conf.d/99-omaconf-suspend.conf"
+    else
+        tcheck "check.suspend_conf" "[[ -f /etc/systemd/sleep.conf.d/99-omaconf-suspend.conf ]]"
+    fi
 fi
 
 section verify.sec_sched

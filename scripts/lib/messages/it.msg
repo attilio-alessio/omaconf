@@ -163,6 +163,9 @@ security.clamav_update_deferred=aggiornamento firme differito al daemon freshcla
 
 power.charge=Applicazione della soglia di ricarica della batteria
 power.deep_sleep=Configurazione della sospensione profonda se supportata
+power.suspend_resume=Configurazione della gestione di sospensione e riattivazione
+power.suspend_mode=Configurazione modalità di sospensione (%s)
+power.nvidia_suspend=Configurazione servizi di gestione alimentazione NVIDIA
 power.charge_enable_skipped=attivazione di battery-charge-threshold saltata
 power.charge_start_skipped=avvio di battery-charge-threshold saltato
 power.charge_write_failed=scrittura del limite di ricarica su %s fallita
@@ -327,6 +330,7 @@ check.battery_tmpfiles=tmpfiles per la ricarica presente
 check.battery_service=servizio batteria attivato
 check.battery_limit=limite di ricarica attivo al 75%
 check.deep_sleep=sospensione profonda configurata se supportata
+check.suspend_conf=configurazione di sospensione valida
 check.weekly_audit=audit di sicurezza settimanale
 check.starship_config=configurazione starship
 check.git_config=configurazione git

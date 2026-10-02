@@ -163,6 +163,9 @@ security.clamav_update_deferred=Signaturaktualisierung an den laufenden freshcla
 
 power.charge=Richtlinie zur Akkuladeladeschwelle durchsetzen
 power.deep_sleep=Deep Sleep konfigurieren, sofern unterstützt
+power.suspend_resume=Suspend- und Resume-Energieverwaltung konfigurieren
+power.suspend_mode=Schlafmodus konfigurieren (%s)
+power.nvidia_suspend=NVIDIA-Energieverwaltungsdienste konfigurieren
 power.charge_enable_skipped=Aktivieren von battery-charge-threshold übersprungen
 power.charge_start_skipped=Start von battery-charge-threshold übersprungen
 power.charge_write_failed=Schreiben des Ladegrenzwerts auf %s fehlgeschlagen
@@ -327,6 +330,7 @@ check.battery_tmpfiles=tmpfiles-Regel für das Laden vorhanden
 check.battery_service=Akkudienst aktiviert
 check.battery_limit=aktives Ladelimit bei 75%
 check.deep_sleep=Deep Sleep bei Unterstützung konfiguriert
+check.suspend_conf=Suspend-Konfiguration ist gültig
 check.weekly_audit=wöchentliche Sicherheitsprüfung
 check.starship_config=starship-Konfiguration
 check.git_config=git-Konfiguration

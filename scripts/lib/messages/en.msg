@@ -163,6 +163,9 @@ security.clamav_update_deferred=signature update deferred to the running freshcl
 
 power.charge=Enforcing battery charge threshold policy
 power.deep_sleep=Configuring deep sleep when supported
+power.suspend_resume=Configuring suspend and resume power management
+power.suspend_mode=Configuring sleep mode (%s)
+power.nvidia_suspend=Configuring NVIDIA power management services
 power.charge_enable_skipped=battery-charge-threshold enable skipped
 power.charge_start_skipped=battery-charge-threshold start skipped
 power.charge_write_failed=Failed to write charge limit to %s
@@ -327,6 +330,7 @@ check.battery_tmpfiles=battery charge tmpfiles exists
 check.battery_service=battery service enabled
 check.battery_limit=live battery limit is 75%
 check.deep_sleep=deep suspend mode configured when supported
+check.suspend_conf=suspend configuration is valid
 check.weekly_audit=weekly security audit
 check.starship_config=starship config
 check.git_config=git config

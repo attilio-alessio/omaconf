@@ -163,6 +163,9 @@ security.clamav_update_deferred=atualização de assinaturas adiada para o daemo
 
 power.charge=Aplicação da política de limite de carga da bateria
 power.deep_sleep=Configurar suspensão profunda quando suportada
+power.suspend_resume=Configurar gerenciamento de energia de suspensão e retomada
+power.suspend_mode=Configurar modo de suspensão (%s)
+power.nvidia_suspend=Configurar serviços de energia da NVIDIA
 power.charge_enable_skipped=ativação do battery-charge-threshold ignorada
 power.charge_start_skipped=arranque do battery-charge-threshold ignorado
 power.charge_write_failed=falha ao escrever o limite de carga em %s
@@ -327,6 +330,7 @@ check.battery_tmpfiles=o tmpfiles de carregamento existe
 check.battery_service=serviço de bateria ativado
 check.battery_limit=limite de carregamento ativo em 75%
 check.deep_sleep=suspensão profunda configurada quando suportada
+check.suspend_conf=configuração de suspensão válida
 check.weekly_audit=auditoria de segurança semanal
 check.starship_config=configuração do starship
 check.git_config=configuração do git

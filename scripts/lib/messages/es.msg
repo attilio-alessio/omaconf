@@ -163,6 +163,9 @@ security.clamav_update_deferred=actualización de firmas diferida al demonio fre
 
 power.charge=Aplicación de la política de umbral de carga de la batería
 power.deep_sleep=Configurar suspensión profunda cuando esté disponible
+power.suspend_resume=Configurar administración de energía para suspensión y reanudación
+power.suspend_mode=Configurar modo de suspensión (%s)
+power.nvidia_suspend=Configurar servicios de energía de NVIDIA
 power.charge_enable_skipped=activación de battery-charge-threshold omitida
 power.charge_start_skipped=inicio de battery-charge-threshold omitido
 power.charge_write_failed=fallo al escribir el límite de carga en %s
@@ -327,6 +330,7 @@ check.battery_tmpfiles=el tmpfiles de carga existe
 check.battery_service=servicio de batería activado
 check.battery_limit=límite de carga activo al 75%
 check.deep_sleep=suspensión profunda configurada cuando esté disponible
+check.suspend_conf=configuración de suspensión válida
 check.weekly_audit=auditoría de seguridad semanal
 check.starship_config=configuración de starship
 check.git_config=configuración de git
