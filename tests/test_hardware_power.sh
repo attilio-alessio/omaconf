@@ -49,10 +49,12 @@ check_live_battery_threshold() {
     local checked=0
     for bat_node in /sys/class/power_supply/BAT*/charge_control_end_threshold /sys/class/power_supply/BAT*/charge_stop_threshold /sys/class/power_supply/BATT*/charge_control_end_threshold; do
         if [[ -f "$bat_node" ]]; then
-            checked=$((checked + 1))
             local val
-            val=$(cat "$bat_node" 2>/dev/null)
-            [[ "$val" == "75" ]] || return 1
+            val=$(cat "$bat_node" 2>/dev/null || printf '')
+            if [[ -n "$val" ]]; then
+                checked=$((checked + 1))
+                [[ "$val" == "75" ]] || return 1
+            fi
         fi
     done
     return 0
