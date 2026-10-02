@@ -121,10 +121,11 @@ assert_file_contains "launch.sh sources the i18n library" "$PROJECT_DIR/scripts/
 assert_file_contains "Makefile exposes lang target" "$PROJECT_DIR/Makefile" "^lang:"
 assert_file_contains "Makefile exposes nvim target" "$PROJECT_DIR/Makefile" "^nvim:"
 assert_file_contains "Makefile exposes cli target" "$PROJECT_DIR/Makefile" "^cli:"
+assert_file_contains "Makefile exposes herdr target" "$PROJECT_DIR/Makefile" "^herdr:"
 assert_file_contains "Makefile help is translated" "$PROJECT_DIR/Makefile" "lib/help.sh"
 assert_file_contains "Makefile hook target installs the i18n runtime" "$PROJECT_DIR/Makefile" "hooks/i18n"
 
-for installer in zedconf microconf nvimconf yaziconf cliconf; do
+for installer in zedconf microconf nvimconf yaziconf cliconf herdrconf; do
     assert_file_contains "$installer sources the i18n library" "$PROJECT_DIR/$installer/install.sh" "i18n.sh"
 done
 

@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 .DEFAULT_GOAL := help
 
-.PHONY: help setup verify test hook icons theme zed micro nvim yazi cli editors clean lang i18n-status lint
+.PHONY: help setup verify test hook icons theme zed micro nvim yazi cli herdr editors clean lang i18n-status lint
 
 lint:
 	@if ! command -v shellcheck &> /dev/null; then \
@@ -12,7 +12,7 @@ lint:
 	shellcheck --severity=style \
 		scripts/*.sh scripts/lib/*.sh scripts/modules/*.sh \
 		hooks/theme-set.d/* hooks/pre-refresh-pacman.d/* hooks/post-update.d/* \
-		zedconf/*.sh microconf/*.sh nvimconf/*.sh yaziconf/*.sh cliconf/*.sh \
+		zedconf/*.sh microconf/*.sh nvimconf/*.sh yaziconf/*.sh cliconf/*.sh herdrconf/*.sh \
 		tests/*.sh
 
 help:
@@ -55,6 +55,9 @@ yazi:
 
 cli:
 	bash cliconf/install.sh
+
+herdr:
+	bash herdrconf/install.sh
 
 editors: zed micro nvim cli
 
