@@ -60,6 +60,15 @@ for user_home in /home/*; do
     fi
 done
 
+log "defaults.herdrconf"
+for user_home in /home/*; do
+    [[ -d "$user_home" ]] || continue
+    _user=$(basename "$user_home")
+    if [[ -x "$PROJECT_DIR/herdrconf/install.sh" ]]; then
+        user_as "$_user" bash "$PROJECT_DIR/herdrconf/install.sh" 2>/dev/null || warn "defaults.herdrconf_skipped" "$_user"
+    fi
+done
+
 log "defaults.trash_install"
 if ! pacman -Q trash-cli &>/dev/null; then
     pacman -S --noconfirm --needed trash-cli

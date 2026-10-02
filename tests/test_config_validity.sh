@@ -45,6 +45,8 @@ fi
 
 assert_true "cliconf helpers bash syntax valid" "bash -n '$CLICONF_DATA/helpers.sh'"
 assert_true "cliconf installer bash syntax valid" "bash -n '$PROJECT_DIR/cliconf/install.sh'"
+assert_true "herdr menu bash syntax valid" "bash -n '$PROJECT_DIR/herdrconf/data/herdr-keybindings-menu'"
+assert_true "herdr installer bash syntax valid" "bash -n '$PROJECT_DIR/herdrconf/install.sh'"
 
 for tool in mpv zathura imv fzf rg fd bat eza zoxide git lazygit gum ai; do
     assert_file_contains "cliconf covers $tool" "$CLICONF_DATA/helpers.sh" "$tool)"
@@ -67,10 +69,24 @@ assert_true "user config library leaves caller shell options untouched" \
 assert_true "no installer keeps the ad hoc timestamped backup" \
     "! grep -qE 'bak-\\\$\\(date' '$PROJECT_DIR'/*conf/install.sh"
 
-for installer in cliconf microconf nvimconf yaziconf zedconf; do
+for installer in cliconf herdrconf microconf nvimconf yaziconf zedconf; do
     assert_file_contains "$installer sources the user config library" \
         "$PROJECT_DIR/$installer/install.sh" "userconf.sh"
 done
+
+HERDR_MENU="$PROJECT_DIR/herdrconf/data/herdr-keybindings-menu"
+assert_file_contains "herdr menu lists the upstream herdr bindings" "$HERDR_MENU" "herdr --default-config"
+assert_file_contains "herdr menu supports print mode" "$HERDR_MENU" '[-]-print'
+assert_file_contains "herdr menu keeps the upstream display format" "$HERDR_MENU" "→ %s"
+assert_file_contains "herdr menu runs only when the herdr process exists" "$HERDR_MENU" "herdr_running"
+assert_file_contains "herdr menu checks the herdr server state" "$HERDR_MENU" "herdr status server"
+assert_file_contains "herdr menu focuses the herdr window" "$HERDR_MENU" "focuswindow"
+assert_file_contains "herdr menu replays keys into herdr" "$HERDR_MENU" "wtype"
+assert_file_contains "herdr menu exits cleanly on menu cancel" "$HERDR_MENU" '\|\| exit 0'
+assert_file_not_contains "herdr menu has no raw failure suppression" "$HERDR_MENU" '\|\|[[:space:]]*true'
+assert_file_contains "herdr installer deploys the menu per user" "$PROJECT_DIR/herdrconf/install.sh" "herdr-keybindings-menu"
+assert_file_contains "herdr installer manages the hyprland binding" "$PROJECT_DIR/herdrconf/install.sh" "bindings.lua"
+assert_file_contains "herdr installer keeps super-ctrl-k on herdr" "$PROJECT_DIR/herdrconf/install.sh" 'SUPER [+] CTRL [+] K'
 
 if ((UID != 0)); then
     USERCONF_SANDBOX="$(mktemp -d)"

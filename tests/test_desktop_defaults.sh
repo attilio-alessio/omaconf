@@ -38,6 +38,7 @@ assert_file_contains "yaziconf installer pins the terminal desktop entry" "$PROJ
 assert_file_contains "yaziconf installer registers the desktop entry" "$PROJECT_DIR/yaziconf/install.sh" "xdg-mime default"
 assert_file_contains "defaults module records file-manager state" "$DEFAULTS_MODULE" "defaults/file-manager"
 assert_file_contains "defaults module rebinds file manager keys to yazi" "$DEFAULTS_MODULE" "omaconf-yazi-fm"
+assert_file_contains "defaults module provisions herdrconf menu" "$DEFAULTS_MODULE" "herdrconf/install.sh"
 assert_file_contains "shell plugins module uses canonical omamp source" "$SHELL_PLUGINS_MODULE" "omaconf/omamp.git"
 assert_file_contains "env module defines omarchy_as helper" "$PROJECT_DIR/scripts/modules/00-env.sh" "omarchy_as\(\)"
 assert_file_contains "omarchy_as forwards the user session bus" "$PROJECT_DIR/scripts/modules/00-env.sh" "DBUS_SESSION_BUS_ADDRESS"

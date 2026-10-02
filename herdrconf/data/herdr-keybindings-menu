@@ -1,0 +1,466 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+print_only=false
+config_file="${HERDR_CONFIG_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/herdr/config.toml}"
+
+parse_args() {
+    while (($#)); do
+        case "$1" in
+            --print|-p)
+                print_only=true
+                ;;
+            --config)
+                shift
+                config_file="$1"
+                ;;
+            *)
+                config_file="$1"
+                ;;
+        esac
+        shift
+    done
+}
+
+if [[ ! -f $config_file ]]; then
+    config_file="/dev/null"
+fi
+
+output_records() (
+    set -o pipefail
+    herdr --default-config | awk -v config_file="$config_file" '
+function strip_comment(value,   i, ch, quote, out) {
+  quote = ""
+  out = ""
+
+  for (i = 1; i <= length(value); i++) {
+    ch = substr(value, i, 1)
+
+    if (quote == "" && (ch == "\"" || ch == "'"'"'")) quote = ch
+    else if (ch == quote) quote = ""
+    if (ch == "#" && quote == "") break
+
+    out = out ch
+  }
+
+  return out
+}
+
+function without_quoted(value,   i, ch, quote, out) {
+  quote = ""
+  out = ""
+
+  for (i = 1; i <= length(value); i++) {
+    ch = substr(value, i, 1)
+
+    if (quote == "") {
+      if (ch == "\"" || ch == "'"'"'") quote = ch
+      else out = out ch
+    } else if (ch == quote) {
+      quote = ""
+    }
+  }
+
+  return quote == "" ? out : "\001"
+}
+
+function is_binding_value(value,   rest) {
+  value = strip_comment(value)
+  sub(/^[[:space:]]+/, "", value)
+  sub(/[[:space:]]+$/, "", value)
+  if (value == "") return 0
+
+  rest = without_quoted(value)
+
+  return rest == "" || rest ~ /^\[[[:space:],]*\]$/
+}
+
+function key_text(key,   count, parts, i, text) {
+  count = split(key, parts, "+")
+  text = ""
+
+  for (i = 1; i <= count; i++) {
+    text = text (text == "" ? "" : " + ") toupper(parts[i])
+  }
+
+  return text
+}
+
+function combo_text(value,   i, ch, quote, part, text) {
+  value = strip_comment(value)
+  quote = ""
+  part = ""
+  text = ""
+
+  for (i = 1; i <= length(value); i++) {
+    ch = substr(value, i, 1)
+
+    if (quote == "") {
+      if (ch == "\"" || ch == "'"'"'") { quote = ch; part = "" }
+      continue
+    }
+
+    if (ch == quote) {
+      quote = ""
+      if (part != "") text = text (text == "" ? "" : " / ") key_text(part)
+      continue
+    }
+
+    part = part ch
+  }
+
+  return text
+}
+
+function first_raw(value,   i, ch, quote, part) {
+  value = strip_comment(value)
+  quote = ""
+  part = ""
+
+  for (i = 1; i <= length(value); i++) {
+    ch = substr(value, i, 1)
+
+    if (quote == "") {
+      if (ch == "\"" || ch == "'"'"'") { quote = ch; part = "" }
+      continue
+    }
+
+    if (ch == quote) {
+      if (part != "") return tolower(part)
+      quote = ""
+      continue
+    }
+
+    part = part ch
+  }
+
+  return ""
+}
+
+function describe(action,   text) {
+  sub(/^navigate_/, "", action)
+  gsub(/_/, " ", action)
+  text = toupper(substr(action, 1, 1)) substr(action, 2)
+
+  return text
+}
+
+function remember(action) {
+  if (action in seen) return
+  seen[action] = 1
+  order[++count] = action
+}
+
+function bind(action, value,   combo, raw) {
+  combo = combo_text(value)
+  if (combo == "") return
+
+  raw = first_raw(value)
+  if (raw == "") return
+
+  if (action ~ /^navigate_/) {
+    combo = "NAVIGATE + " combo
+    raw = "navigate+" raw
+  }
+
+  remember(action)
+  combos[action] = combo
+  raws[action] = raw
+}
+
+FNR == NR {
+  line = $0
+  sub(/^[[:space:]]*#[[:space:]]*/, "", line)
+
+  if (line ~ /^\[\[keys\.command\]\]/) { in_keys = 0; next }
+  if (line ~ /^\[/) { in_keys = (line ~ /^\[keys\]/); next }
+  if (!in_keys) next
+  if (line !~ /^[a-z_]+[[:space:]]*=/) next
+
+  action = line
+  sub(/[[:space:]]*=.*$/, "", action)
+  value = line
+  sub(/^[^=]*=[[:space:]]*/, "", value)
+  if (!is_binding_value(value)) next
+
+  remember(action)
+  bind(action, value)
+  next
+}
+
+{
+  if ($0 ~ /^\[\[keys\.command\]\]/) { in_user_keys = 0; next }
+  if ($0 ~ /^\[/) { in_user_keys = ($0 ~ /^\[keys\]/); next }
+  if (!in_user_keys) next
+  if ($0 ~ /^[[:space:]]*#/) next
+  if ($0 !~ /^[[:space:]]*[a-z_]+[[:space:]]*=/) next
+
+  line = $0
+  sub(/^[[:space:]]*/, "", line)
+  action = line
+  sub(/[[:space:]]*=.*$/, "", action)
+  value = line
+  sub(/^[^=]*=[[:space:]]*/, "", value)
+  if (!is_binding_value(value)) next
+
+  if (combo_text(value) == "") {
+    delete combos[action]
+    delete raws[action]
+    next
+  }
+
+  bind(action, value)
+}
+
+END {
+  if ("prefix" in combos) {
+    printf "%-32s → %s\t%s\n", "PREFIX", combos["prefix"], raws["prefix"]
+  }
+
+  for (i = 1; i <= count; i++) {
+    action = order[i]
+    if (action == "prefix") continue
+    if (!(action in combos)) continue
+
+    printf "%-32s → %s\t%s\n", combos[action], describe(action), raws[action]
+  }
+}
+' - "$config_file"
+)
+
+herdr_running() {
+    if command -v herdr >/dev/null 2>&1; then
+        if herdr status server --json 2>/dev/null | grep -q '"running"[[:space:]]*:[[:space:]]*true'; then
+            return 0
+        fi
+    fi
+    pgrep -x herdr >/dev/null 2>&1
+}
+
+resolve_herdr_prefix() {
+    local cfg="${HERDR_CONFIG_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/herdr/config.toml}"
+    local found=""
+    if [[ -f "$cfg" ]]; then
+        found="$(grep -E '^[[:space:]]*prefix[[:space:]]*=' "$cfg" 2>/dev/null | tail -n 1 | sed -E 's/^[^=]*=[[:space:]]*//; s/[[:space:]]*(#.*)?$//; s/^"//; s/"$//' | tr '[:upper:]' '[:lower:]')"
+        if [[ -n "$found" ]]; then
+            printf '%s' "$found"
+            return 0
+        fi
+    fi
+    if command -v herdr >/dev/null 2>&1; then
+        found="$(herdr --default-config 2>/dev/null | grep -E '^[[:space:]]*#[[:space:]]*prefix[[:space:]]*=' | head -n 1 | sed -E 's/^[^=]*=[[:space:]]*//; s/[[:space:]]*(#.*)?$//; s/^"//; s/"$//' | tr '[:upper:]' '[:lower:]')"
+        if [[ -n "$found" ]]; then
+            printf '%s' "$found"
+            return 0
+        fi
+    fi
+    printf 'ctrl+b'
+}
+
+herdr_window_by_name() {
+    if ! command -v hyprctl >/dev/null 2>&1 || ! command -v jq >/dev/null 2>&1; then
+        return 1
+    fi
+    hyprctl clients -j 2>/dev/null | jq -r '.[] | select(((.class // "") | test("herdr"; "i")) or ((.title // "") | test("herdr"; "i")) or ((.initialClass // "") | test("herdr"; "i")) or ((.initialTitle // "") | test("herdr"; "i"))) | .address' 2>/dev/null | head -n 1
+}
+
+is_proc_descendant() {
+    local cur="$1" ancestor="$2" ppid
+    while [[ -n "$cur" && "$cur" != "1" && "$cur" != "0" ]]; do
+        if [[ "$cur" == "$ancestor" ]]; then
+            return 0
+        fi
+        ppid="$(awk '/^PPid:/ {print $2}' "/proc/$cur/status" 2>/dev/null)"
+        if [[ -z "$ppid" ]]; then
+            return 1
+        fi
+        cur="$ppid"
+    done
+    return 1
+}
+
+herdr_window_by_pid() {
+    local hpid addr cpid
+    if ! command -v hyprctl >/dev/null 2>&1 || ! command -v jq >/dev/null 2>&1; then
+        return 1
+    fi
+    if ! command -v pgrep >/dev/null 2>&1; then
+        return 1
+    fi
+    while read -r addr cpid; do
+        [[ -n "$addr" && -n "$cpid" ]] || continue
+        while read -r hpid; do
+            [[ -n "$hpid" ]] || continue
+            if is_proc_descendant "$hpid" "$cpid"; then
+                printf '%s' "$addr"
+                return 0
+            fi
+        done < <(pgrep -x herdr 2>/dev/null)
+    done < <(hyprctl clients -j 2>/dev/null | jq -r '.[] | "\(.address) \(.pid)"' 2>/dev/null)
+    return 1
+}
+
+focus_herdr_window() {
+    local addr="$1"
+    if hyprctl dispatch "hl.dsp.focus({ window = \"address:$addr\" })" >/dev/null 2>&1; then
+        return 0
+    fi
+    hyprctl dispatch focuswindow "address:$addr" >/dev/null 2>&1
+}
+
+xkb_key() {
+    case "$1" in
+        enter|return) printf 'Return' ;;
+        esc|escape) printf 'Escape' ;;
+        tab) printf 'Tab' ;;
+        space) printf 'space' ;;
+        left) printf 'Left' ;;
+        right) printf 'Right' ;;
+        up) printf 'Up' ;;
+        down) printf 'Down' ;;
+        minus) printf 'minus' ;;
+        plus) printf 'plus' ;;
+        comma) printf 'comma' ;;
+        period|dot) printf 'period' ;;
+        slash) printf 'slash' ;;
+        semicolon) printf 'semicolon' ;;
+        backtick|grave) printf 'grave' ;;
+        *) printf '%s' "$1" ;;
+    esac
+}
+
+xkb_mod() {
+    case "$1" in
+        ctrl|control) printf 'ctrl' ;;
+        shift) printf 'shift' ;;
+        alt) printf 'alt' ;;
+        super|cmd|win|logo) printf 'logo' ;;
+        *) printf '%s' "$1" ;;
+    esac
+}
+
+wtype_chord() {
+    local combo="$1"
+    local IFS='+'
+    local -a parts mods
+    local key mod args
+    read -ra parts <<< "$combo"
+    if ((${#parts[@]} == 0)); then
+        return 1
+    fi
+    key="${parts[${#parts[@]}-1]}"
+    mods=()
+    for mod in "${parts[@]:0:${#parts[@]}-1}"; do
+        mods+=("$(xkb_mod "$mod")")
+    done
+    args=()
+    for mod in "${mods[@]}"; do
+        args+=(-M "$mod")
+    done
+    args+=(-k "$(xkb_key "$key")")
+    for ((i = ${#mods[@]} - 1; i >= 0; i--)); do
+        args+=(-m "${mods[$i]}")
+    done
+    wtype "${args[@]}" >/dev/null 2>&1
+}
+
+replay_herdr_keys() {
+    local raw="$1" prefix rest
+    raw="${raw,,}"
+    if [[ "$raw" == *".."* ]]; then
+        return 0
+    fi
+    prefix="$(resolve_herdr_prefix)"
+    if [[ "$raw" == "prefix" ]]; then
+        wtype_chord "$prefix" || return 0
+        return 0
+    fi
+    if [[ "$raw" != *"+"* ]]; then
+        wtype -k "$(xkb_key "$raw")" >/dev/null 2>&1 || return 0
+        return 0
+    fi
+    if [[ "$raw" == "prefix+"* ]]; then
+        rest="${raw#prefix+}"
+        wtype_chord "$prefix" || return 0
+        sleep 0.15
+        wtype_chord "$rest" || return 0
+        return 0
+    fi
+    if [[ "$raw" == "$prefix" ]]; then
+        wtype_chord "$raw" || return 0
+        return 0
+    fi
+    if [[ "$raw" == "$prefix+"* ]]; then
+        rest="${raw#"${prefix}+"}"
+        wtype_chord "$prefix" || return 0
+        sleep 0.15
+        wtype_chord "$rest" || return 0
+        return 0
+    fi
+    if [[ "$raw" == "navigate+"* ]]; then
+        rest="${raw#navigate+}"
+        wtype -k "$(xkb_key "$rest")" >/dev/null 2>&1 || return 0
+        return 0
+    fi
+    wtype_chord "$raw" || return 0
+}
+
+main() {
+    parse_args "$@"
+
+    if [[ "$print_only" == "true" ]]; then
+        records="$(output_records 2>/dev/null)" || records=""
+        if [[ -n "$records" ]]; then
+            cut -f1 <<< "$records"
+        fi
+        exit 0
+    fi
+
+    records="$(output_records 2>/dev/null)" || records=""
+    if [[ -z "$records" ]]; then
+        exit 0
+    fi
+
+    monitor_height="$(hyprctl monitors -j 2>/dev/null | jq -r '.[] | select(.focused == true) | .height' 2>/dev/null)" || monitor_height=""
+    if [[ ! "$monitor_height" =~ ^[0-9]+$ ]] || ((monitor_height <= 0)); then
+        monitor_height=900
+    fi
+    menu_height=$((monitor_height * 40 / 100))
+
+    selection="$(printf '%s\n' "$records" | cut -f1 | omarchy-menu-select 'Herdr keybindings' -- --width 800 --height "$menu_height" 2>/dev/null)" || exit 0
+    if [[ -z "$selection" ]]; then
+        exit 0
+    fi
+
+    if ! herdr_running; then
+        exit 0
+    fi
+
+    raw="$(awk -F '\t' -v sel="$selection" '$1 == sel { print $2; exit }' <<< "$records")"
+    if [[ -z "$raw" ]]; then
+        exit 0
+    fi
+
+    addr="$(herdr_window_by_name)" || addr=""
+    if [[ -z "$addr" ]]; then
+        addr="$(herdr_window_by_pid)" || addr=""
+    fi
+    if [[ -z "$addr" ]]; then
+        if command -v omarchy-launch-terminal-herdr >/dev/null 2>&1; then
+            omarchy-launch-terminal-herdr >/dev/null 2>&1 || exit 0
+        fi
+        exit 0
+    fi
+
+    focus_herdr_window "$addr" || exit 0
+    sleep 0.2
+
+    if command -v wtype >/dev/null 2>&1; then
+        replay_herdr_keys "$raw"
+    fi
+    exit 0
+}
+
+if [[ "${BASH_SOURCE[0]:-}" == "$0" ]]; then
+    main "$@"
+fi
