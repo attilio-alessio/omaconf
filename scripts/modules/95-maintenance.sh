@@ -89,7 +89,10 @@ for u_home in /home/*; do
 done
 
 log "maint.orphans"
-mapfile -t orphans < <(pacman -Qdtq 2>/dev/null || :)
+orphans=()
+if pacman -Qdtq &>/dev/null; then
+    mapfile -t orphans < <(pacman -Qdtq)
+fi
 if [[ ${#orphans[@]} -gt 0 && -n "${orphans[0]}" ]]; then
     pacman -Rns --noconfirm "${orphans[@]}" 2>/dev/null || warn "maint.orphans_skipped"
 fi

@@ -13,6 +13,8 @@ assert_false "No unverified aur_install calls in setup.sh" "grep -q 'aur_install
 assert_false "No yay -S invocations in setup scripts" "grep -q 'yay -S' '$PROJECT_DIR/scripts/setup.sh' '$PROJECT_DIR'/scripts/modules/*.sh"
 assert_false "No raw '|| true' failure suppression in scripts" "grep -qE '\|\|[[:space:]]*true\b' '$PROJECT_DIR'/scripts/*.sh '$PROJECT_DIR'/scripts/modules/*.sh '$PROJECT_DIR'/hooks/pre-refresh-pacman.d/* '$PROJECT_DIR'/hooks/post-update.d/*"
 assert_false "No raw '|| true' failure suppression in tests" "grep --exclude=test_idempotency_safety.sh -qE '\|\|[[:space:]]*true\b' '$PROJECT_DIR'/tests/*.sh"
+assert_false "No raw '|| null' failure suppression in scripts" "grep -qE '\|\|[[:space:]]*null\b' '$PROJECT_DIR'/scripts/*.sh '$PROJECT_DIR'/scripts/modules/*.sh '$PROJECT_DIR'/hooks/*/*"
+assert_false "No raw '|| false' failure suppression in scripts" "grep -qE '\|\|[[:space:]]*false\b' '$PROJECT_DIR'/scripts/*.sh '$PROJECT_DIR'/scripts/modules/*.sh '$PROJECT_DIR'/hooks/*/*"
 
 check_no_hardcoded_user_paths() {
     local count

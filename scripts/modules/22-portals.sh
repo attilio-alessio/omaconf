@@ -23,7 +23,7 @@ for user_home in /home/*; do
 [filechooser]
 cmd=/usr/share/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh
 default_dir=$HOME
-env=TERMCMD='kitty --title "terminal filechooser"'
+env=TERMCMD=kitty --title "termfilechooser"
 open_mode=suggested
 save_mode=last
 TFEOF

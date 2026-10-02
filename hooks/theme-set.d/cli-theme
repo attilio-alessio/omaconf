@@ -25,7 +25,7 @@ mkdir -p "$OMACONF_CONFIG" "$LAZYGIT_CONFIG"
 get_color() {
     local key="$1" default="$2" toml="$3"
     local val
-    val=$(grep -E "^[[:space:]]*${key}[[:space:]]*=" "$toml" 2>/dev/null | head -1 | sed -E 's/.*=[[:space:]]*"([^"]+)".*/\1/' || :)
+    val=$(grep -E "^[[:space:]]*${key}[[:space:]]*=" "$toml" 2>/dev/null | head -1 | sed -E 's/.*=[[:space:]]*"([^"]+)".*/\1/')
     if [[ -n "$val" ]]; then
         printf '%s\n' "$val"
     else
