@@ -185,6 +185,8 @@ USERADD
   #include <abstractions/nameservice>
   #include <abstractions/openssl>
   #include <abstractions/ssl_certs>
+  #include <abstractions/user-download>
+  #include <abstractions/user-tmp>
 
   network inet stream,
   network inet6 stream,
@@ -196,12 +198,18 @@ USERADD
   /etc/hosts r,
   /dev/null rw,
   /dev/urandom r,
-  /tmp/** rw,
+  /tmp/** rwkl,
+  /var/tmp/** rwkl,
+  /home/** rwkl,
+  /root/** rwkl,
+  /var/cache/** rwkl,
+  owner @{HOME}/** rwkl,
 
   deny /etc/shadow r,
   deny /etc/gshadow r,
   deny /etc/sudoers r,
   deny /etc/ssh/sshd_config r,
+  deny /etc/ssh/*key* r,
 }
 CURL
 
@@ -214,6 +222,8 @@ CURL
   #include <abstractions/nameservice>
   #include <abstractions/openssl>
   #include <abstractions/ssl_certs>
+  #include <abstractions/user-download>
+  #include <abstractions/user-tmp>
 
   network inet stream,
   network inet6 stream,
@@ -224,12 +234,18 @@ CURL
   /etc/hosts r,
   /dev/null rw,
   /dev/urandom r,
-  /tmp/** rw,
+  /tmp/** rwkl,
+  /var/tmp/** rwkl,
+  /home/** rwkl,
+  /root/** rwkl,
+  /var/cache/** rwkl,
+  owner @{HOME}/** rwkl,
 
   deny /etc/shadow r,
   deny /etc/gshadow r,
   deny /etc/sudoers r,
   deny /etc/ssh/sshd_config r,
+  deny /etc/ssh/*key* r,
 }
 WGET
 

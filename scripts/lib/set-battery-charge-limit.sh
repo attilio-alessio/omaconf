@@ -13,7 +13,7 @@ for battery in /sys/class/power_supply/BAT* /sys/class/power_supply/BATT*; do
     for attribute in charge_control_end_threshold charge_stop_threshold charge_end_threshold; do
         node="$battery/$attribute"
         [[ -w "$node" ]] || continue
-        printf '%s\n' "$limit" > "$node"
+        printf '%s\n' "$limit" > "$node" 2>/dev/null || continue
         break
     done
 done

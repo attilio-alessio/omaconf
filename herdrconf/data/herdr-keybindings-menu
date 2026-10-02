@@ -257,6 +257,28 @@ resolve_herdr_prefix() {
     printf 'ctrl+b'
 }
 
+herdr_active_window() {
+    if ! command -v hyprctl >/dev/null 2>&1 || ! command -v jq >/dev/null 2>&1; then
+        return 1
+    fi
+    local active_addr active_pid
+    active_addr="$(hyprctl activewindow -j 2>/dev/null | jq -r 'select(((.class // "") | test("herdr"; "i")) or ((.title // "") | test("herdr"; "i")) or ((.initialClass // "") | test("herdr"; "i")) or ((.initialTitle // "") | test("herdr"; "i"))) | .address' 2>/dev/null)" || active_addr=""
+    if [[ -n "$active_addr" && "$active_addr" != "null" ]]; then
+        printf '%s' "$active_addr"
+        return 0
+    fi
+    active_pid="$(hyprctl activewindow -j 2>/dev/null | jq -r '.pid' 2>/dev/null)" || active_pid=""
+    if [[ -n "$active_pid" && "$active_pid" =~ ^[0-9]+$ && "$active_pid" -gt 0 ]]; then
+        for hpid in $(pgrep -x herdr 2>/dev/null); do
+            if is_proc_descendant "$hpid" "$active_pid"; then
+                hyprctl activewindow -j 2>/dev/null | jq -r '.address' 2>/dev/null
+                return 0
+            fi
+        done
+    fi
+    return 1
+}
+
 herdr_window_by_name() {
     if ! command -v hyprctl >/dev/null 2>&1 || ! command -v jq >/dev/null 2>&1; then
         return 1
@@ -441,9 +463,12 @@ main() {
         exit 0
     fi
 
-    addr="$(herdr_window_by_name)" || addr=""
+    addr="$(herdr_active_window 2>/dev/null)" || addr=""
     if [[ -z "$addr" ]]; then
-        addr="$(herdr_window_by_pid)" || addr=""
+        addr="$(herdr_window_by_name 2>/dev/null)" || addr=""
+    fi
+    if [[ -z "$addr" ]]; then
+        addr="$(herdr_window_by_pid 2>/dev/null)" || addr=""
     fi
     if [[ -z "$addr" ]]; then
         if command -v omarchy-launch-terminal-herdr >/dev/null 2>&1; then

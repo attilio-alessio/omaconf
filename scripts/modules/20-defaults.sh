@@ -121,41 +121,6 @@ for user_home in /home/*; do
     chown -R "$_user":"$_user" "$user_home/.local/state" 2>/dev/null || warn "defaults.editor_state_failed" "$_user"
 done
 
-log "defaults.portal_install"
-if ! pacman -Q xdg-desktop-portal-termfilechooser &>/dev/null; then
-    aur_verified_install xdg-desktop-portal-termfilechooser || warn "defaults.portal_failed"
-fi
-
-log "defaults.portal_route"
-for user_home in /home/*; do
-    [[ -d "$user_home" ]] || continue
-    _user=$(basename "$user_home")
-    _tf_dir="$user_home/.config/xdg-desktop-portal-termfilechooser"
-    _portal_dir="$user_home/.config/xdg-desktop-portal"
-    mkdir -p "$_tf_dir" "$_portal_dir" 2>/dev/null || warn "defaults.portal_dirs_skipped" "$_user"
-    if [[ ! -f "$_tf_dir/config" ]]; then
-        cat > "$_tf_dir/config" << 'TFEOF' 2>/dev/null || warn "defaults.portal_config_skipped" "$_user"
-[filechooser]
-cmd=/usr/share/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh
-default_dir=$HOME
-env=TERMCMD='kitty --title "terminal filechooser"'
-open_mode=suggested
-save_mode=last
-TFEOF
-    fi
-    sed -i "s|TERMCMD='foot |TERMCMD='kitty |" "$_tf_dir/config"
-    for _pc in portals.conf hyprland-portals.conf; do
-        _pf="$_portal_dir/$_pc"
-        if grep -q '^org\.freedesktop\.impl\.portal\.FileChooser=' "$_pf" 2>/dev/null; then
-            sed -i 's|^org\.freedesktop\.impl\.portal\.FileChooser=.*|org.freedesktop.impl.portal.FileChooser=termfilechooser|' "$_pf" 2>/dev/null || warn "defaults.portal_conf_enforce" "$_user"
-        else
-            grep -q '^\[preferred\]' "$_pf" 2>/dev/null || printf '[preferred]\n' >> "$_pf" 2>/dev/null || warn "defaults.portal_conf_header" "$_user"
-            printf 'org.freedesktop.impl.portal.FileChooser=termfilechooser\n' >> "$_pf" 2>/dev/null || warn "defaults.portal_conf_insert" "$_user"
-        fi
-    done
-    chown -R "$_user":"$_user" "$_tf_dir" "$_portal_dir" 2>/dev/null || warn "defaults.portal_chown_failed" "$_user"
-done
-
 log "defaults.rebind"
 for user_home in /home/*; do
     [[ -d "$user_home" ]] || continue

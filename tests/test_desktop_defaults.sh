@@ -45,6 +45,11 @@ assert_file_contains "omarchy_as forwards the user session bus" "$PROJECT_DIR/sc
 assert_file_contains "defaults module routes browser through omarchy_as" "$DEFAULTS_MODULE" "omarchy_as"
 assert_file_contains "setup.sh references nvim module" "$PROJECT_DIR/scripts/setup.sh" "33-nvim.sh"
 assert_file_contains "setup.sh references shell plugins module" "$PROJECT_DIR/scripts/setup.sh" "35-shell-plugins.sh"
+assert_file_contains "setup.sh references portals module" "$PROJECT_DIR/scripts/setup.sh" "22-portals.sh"
+assert_file_contains "setup.sh references keyring module" "$PROJECT_DIR/scripts/setup.sh" "62-keyring.sh"
+assert_file_contains "portals module configures termfilechooser" "$PROJECT_DIR/scripts/modules/22-portals.sh" "xdg-desktop-portal-termfilechooser"
+assert_file_contains "keyring module provisions libsecret and pass" "$PROJECT_DIR/scripts/modules/62-keyring.sh" "libsecret"
+assert_file_contains "keyring module masks gnome-keyring" "$PROJECT_DIR/scripts/modules/62-keyring.sh" "gnome-keyring-daemon"
 assert_file_contains "nvim module provisions root nvimconf" "$PROJECT_DIR/scripts/modules/33-nvim.sh" "nvimconf/install.sh"
 
 PERSIST_PRE="$PROJECT_DIR/hooks/pre-refresh-pacman.d/99-omaconf-persist"

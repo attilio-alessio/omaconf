@@ -115,12 +115,12 @@ for user_home in /home/*; do
 [filechooser]
 cmd=/usr/share/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh
 default_dir=$HOME
-env=TERMCMD='kitty --title "terminal filechooser"'
+env=TERMCMD=kitty --title "termfilechooser"
 open_mode=suggested
 save_mode=last
 TFEOF
   fi
-  sed -i "s|TERMCMD='foot |TERMCMD='kitty |" "$_tf_dir/config"
+  sed -i 's|env=TERMCMD=.*|env=TERMCMD=kitty --title "termfilechooser"|' "$_tf_dir/config" 2>/dev/null || warn "hooks.portal_config_reapply_skipped" "$_user"
   omarchy default terminal kitty 2>/dev/null || warn "hooks.terminal_reapply_skipped" "$_user"
   for _pc in portals.conf hyprland-portals.conf; do
     _pf="$_portal_dir/$_pc"

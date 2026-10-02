@@ -15,6 +15,7 @@ EXPECTED_MODULES=(
     "05-locale.sh"
     "10-debloat.sh"
     "20-defaults.sh"
+    "22-portals.sh"
     "30-theming.sh"
     "32-omaqt.sh"
     "33-nvim.sh"
@@ -22,11 +23,13 @@ EXPECTED_MODULES=(
     "40-firewall.sh"
     "50-kernel.sh"
     "60-auth.sh"
+    "62-keyring.sh"
     "70-ssh.sh"
     "80-services.sh"
     "85-security-stack.sh"
     "89-battery-charge.sh"
     "90-hardware-power.sh"
+    "91-suspend-resume.sh"
     "95-maintenance.sh"
 )
 
